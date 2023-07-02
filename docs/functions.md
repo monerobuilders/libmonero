@@ -19,7 +19,7 @@ fmt.Println(monero.Version())
 ---
 
 ## Wallet
-- ### `GenerateMnemonic(language: string) (string, error)`
+- ### `GenerateMnemonicSeed(language: string) (string, error)`
 
 Generates a mnemonic phrase for given language \
 Supported languages: `en` \

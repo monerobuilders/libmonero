@@ -2,7 +2,7 @@
 
 You can get started by installing and importing the library into your project with:
 ```bash
-go get "github.com/openmonero/monero.go@v0.1.0"
+go get "github.com/openmonero/monero.go@latest"
 ```
 And:
 ```go

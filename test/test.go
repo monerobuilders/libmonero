@@ -6,10 +6,11 @@ import (
 )
 
 func main() {
-	mne, error := monero.GenerateMnemonic("en")
+	mne, error := monero.GenerateMnemonicSeed("en")
 	if error != nil {
 		panic(error)
 		return
 	}
 	fmt.Println(mne)
+
 }
