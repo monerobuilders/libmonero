@@ -1,6 +1,10 @@
 # Getting Started
 
-You can get started by importing the library into your project with:
+You can get started by installing and importing the library into your project with:
+```bash
+go get "github.com/openmonero/monero.go"
+```
+And:
 ```go
 import "github.com/openmonero/monero.go"
 ```
