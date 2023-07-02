@@ -2,8 +2,23 @@
 
 Here you can see all functions in this library
 
+Overview list:
+- [Utils](#utils)
+- [Wallet](#wallet)
+---
+## Utils
+- ### `Version() string`
+
+Returns the version of the library 
+Example usage:
+```go
+fmt.Println(monero.Version())
+> "0.1.0"
+```
+
 ---
 
+## Wallet
 - ### `GenerateMnemonic(language: string) (string, error)`
 
 Generates a mnemonic phrase for given language \
