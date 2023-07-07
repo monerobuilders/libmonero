@@ -13,7 +13,7 @@ package monero
 import "regexp"
 
 func Version() string {
-	return "0.1.1"
+	return "0.1.2"
 }
 
 func ValidateAddress(address string) bool {
