@@ -20,6 +20,7 @@ import (
 	"hash/crc32"
 	"math/big"
 	"strings"
+	"unsafe"
 )
 
 // Generates and returns a random word from the mnemonic word list, which is a list of 1626 words
@@ -136,12 +137,23 @@ func DeriveHexSeedFromMnemonicSeed(mnemonic string, language string) (string, er
 }
 
 // Returns keccak256 value of given bytes
-func keccak256(bytes []byte) [32]byte {
+func keccak256B(bytes []byte) [32]byte {
 	hash := sha3.NewLegacyKeccak256()
 	hash.Write(bytes)
 	var out [32]byte
 	copy(out[:], hash.Sum(nil))
 	return out
+}
+
+// Returns keccak256 value of given bytes
+func keccak256D(data ...[]byte) *[32]byte {
+	h := sha3.NewLegacyKeccak256()
+	for _, v := range data {
+		h.Write(v)
+	}
+	sum := h.Sum(nil)
+	sum32 := (*[32]byte)(unsafe.Pointer(&sum[0]))
+	return sum32
 }
 
 // DerivePrivateKeysFromHexSeed : Calculates and returns private spend key and private view key from given hexadecimal seed
@@ -155,7 +167,7 @@ func DerivePrivateKeysFromHexSeed(hexSeed string) (string /* Private Spend Key *
 	copy(bytesSeed[:], hexBytes[:32])
 	moneroutil.ScReduce32((*moneroutil.Key)(bytesSeed))
 	spendKey := bytesSeed
-	privateViewKeyBytes32 := keccak256(spendKey[:])
+	privateViewKeyBytes32 := keccak256B(spendKey[:])
 	privateViewKey := privateViewKeyBytes32
 	moneroutil.ScReduce32((*moneroutil.Key)(privateViewKey[:]))
 	return fmt.Sprintf("%x", spendKey)[1:], fmt.Sprintf("%x", privateViewKey), nil
@@ -170,8 +182,48 @@ func DerivePrivVKFromPrivSK(privateSpendKey string) (string, error) {
 	}
 	bytesSeed := new([32]byte)
 	copy(bytesSeed[:], hexBytes[:32])
-	privateViewKeyBytes32 := keccak256(bytesSeed[:])
+	privateViewKeyBytes32 := keccak256B(bytesSeed[:])
 	privateViewKey := privateViewKeyBytes32
 	moneroutil.ScReduce32((*moneroutil.Key)(privateViewKey[:]))
 	return fmt.Sprintf("%x", privateViewKey), nil
+}
+
+// DerivePublicKeyFromPrivateKey : Calculates and returns public key from given private key
+// Returns error if there has been an error
+func DerivePublicKeyFromPrivateKey(privateKey string) (string, error) {
+	pub := new([32]byte)
+	priv, err := hex.DecodeString(privateKey)
+	if err != nil {
+		return "", err
+	}
+	p := new(moneroutil.ExtendedGroupElement)
+	moneroutil.GeScalarMultBase(p, (*moneroutil.Key)(priv))
+	p.ToBytes((*moneroutil.Key)(pub))
+
+	return fmt.Sprintf("%x", pub)[1:], nil
+}
+
+// DeriveAddressFromPubKeys : Calculates and returns address from given public spend key and public view key and network
+// Network can only be "moneromainnet" or "monerotestnet"
+// Returns error if there has been an error
+func DeriveAddressFromPubKeys(pubSpendKey string, pubViewKey string, network string) (string, error) {
+	var givenNetwork []byte
+	if network == "moneromainnet" {
+		givenNetwork = []byte{0x12}
+	} else if network == "monerotestnet" {
+		givenNetwork = []byte{0x35}
+	} else {
+		return "", errors.New("invalid network")
+	}
+	pubSpendKeyBytes, err := hex.DecodeString(pubSpendKey)
+	if err != nil {
+		return "", err
+	}
+	pubViewKeyBytes, err := hex.DecodeString(pubViewKey)
+	if err != nil {
+		return "", err
+	}
+	hash := keccak256D(givenNetwork, pubSpendKeyBytes[:], pubViewKeyBytes[:])
+	address := moneroutil.EncodeMoneroBase58(givenNetwork, pubSpendKeyBytes[:], pubViewKeyBytes[:], hash[:4])
+	return address, nil
 }

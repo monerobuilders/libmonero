@@ -78,6 +78,34 @@ fmt.Println(privateViewKey)
 > "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"
 ```
 
+- ### `DerivePublicKeyFromPrivateKey(privateKey string) (string, error)`
+
+Derives public key from given private key (can be spend key or view key) \
+Example usage:
+```go
+privSpendKey := "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08"
+pubSpendKey := monero.DerivePublicKeyFromPrivateKey(privSpendKey)
+fmt.Println(pubSpendKey)
+> "e78d891dd2be407f24e6470caad956e1b746ae0b41cd8252f96684090bc05d95"
+---
+privViewKey := "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"
+pubViewKey := monero.DerivePublicKeyFromPrivateKey(privViewKey)
+fmt.Println(pubViewKey)
+> "157d278aa3aee4e11c5a8243a43a78527a2691009562b8c18654975f1347cb47"
+```
+
+- ### `DeriveAddressFromPubKeys(publicSpendKey string, publicViewKey string, network string) (string, error)`
+
+Derives address from given public spend key and public view key and network \
+Network can either be "moneromainnet" or "monerotestnet" \
+Example usage:
+```go
+pubSpendKey := "e78d891dd2be407f24e6470caad956e1b746ae0b41cd8252f96684090bc05d95"
+pubViewKey := "157d278aa3aee4e11c5a8243a43a78527a2691009562b8c18654975f1347cb47"
+address, _ := monero.DeriveAddressFromPubKeys(pubSpendKey, pubViewKey, "moneromainnet")
+fmt.Println(address)
+> "4AQ3jTJg91yNGTXjo9iWr1ekjBGJ5mM6HEsxKqoKddHnRwJTVJYnyLXeerff6iTys5Eo8dyG87tfqZNS5CcSd7U694YiR8J"
+```
 
 
 
