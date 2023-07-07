@@ -4,7 +4,7 @@ Here you can see all functions in this library
 
 Overview list:
 - [Utils](#utils)
-- [Wallet](#wallet)
+- [Keys](#keys)
 ---
 ## Utils
 - ### `Version() string`
@@ -31,7 +31,7 @@ fmt.Println(monero.ValidateAddress(invalidAddress))
 ```
 ---
 
-## Wallet
+## Keys
 
 - ### `GenerateMnemonicSeed(language string) (string, error)`
 
