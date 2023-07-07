@@ -20,7 +20,6 @@ import (
 	"hash/crc32"
 	"math/big"
 	"strings"
-	"unsafe"
 )
 
 // Generates and returns a random word from the mnemonic word list, which is a list of 1626 words
@@ -136,27 +135,43 @@ func DeriveHexSeedFromMnemonicSeed(mnemonic string, language string) (string, er
 	return out, nil
 }
 
-// DerivePrivateSpendKeyFromHexSeed : Calculates and returns private spend key from given hexadecimal seed
+// Returns keccak256 value of given bytes
+func keccak256(bytes []byte) [32]byte {
+	hash := sha3.NewLegacyKeccak256()
+	hash.Write(bytes)
+	var out [32]byte
+	copy(out[:], hash.Sum(nil))
+	return out
+}
+
+// DerivePrivateKeysFromHexSeed : Calculates and returns private spend key and private view key from given hexadecimal seed
 // Returns error if there has been an error
-func DerivePrivateSpendKeyFromHexSeed(hexSeed string) (string, error) {
+func DerivePrivateKeysFromHexSeed(hexSeed string) (string /* Private Spend Key */, string /* Private View Key */, error) {
 	hexBytes, err := hex.DecodeString(hexSeed)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	bytesSeed := new([32]byte)
 	copy(bytesSeed[:], hexBytes[:32])
 	moneroutil.ScReduce32((*moneroutil.Key)(bytesSeed))
 	spendKey := bytesSeed
-	return fmt.Sprintf("%x", spendKey)[1:], nil
+	privateViewKeyBytes32 := keccak256(spendKey[:])
+	privateViewKey := privateViewKeyBytes32
+	moneroutil.ScReduce32((*moneroutil.Key)(privateViewKey[:]))
+	return fmt.Sprintf("%x", spendKey)[1:], fmt.Sprintf("%x", privateViewKey), nil
 }
 
-// Returns keccak256 value of given bytes
-func keccak256(data ...[]byte) *[32]byte {
-	theKeccakAlg := sha3.NewLegacyKeccak256()
-	for _, v := range data {
-		theKeccakAlg.Write(v)
+// DerivePrivVKFromPrivSK : Calculates and returns private view key from given private spend key
+// Returns error if there has been an error
+func DerivePrivVKFromPrivSK(privateSpendKey string) (string, error) {
+	hexBytes, err := hex.DecodeString(privateSpendKey)
+	if err != nil {
+		return "", err
 	}
-	summary := theKeccakAlg.Sum(nil)
-	summary32 := (*[32]byte)(unsafe.Pointer(&summary[0]))
-	return summary32
+	bytesSeed := new([32]byte)
+	copy(bytesSeed[:], hexBytes[:32])
+	privateViewKeyBytes32 := keccak256(bytesSeed[:])
+	privateViewKey := privateViewKeyBytes32
+	moneroutil.ScReduce32((*moneroutil.Key)(privateViewKey[:]))
+	return fmt.Sprintf("%x", privateViewKey), nil
 }

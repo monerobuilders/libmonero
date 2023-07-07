@@ -54,17 +54,29 @@ fmt.Println(hexadecimalSeed)
 > "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8"
 ```
 
-- ### `DerivePrivateSpendKeyFromHexSeed(hexSeed string) (string, string, error)`
+- ### `DerivePrivateKeysFromHexSeed(hexSeed string) (string, string, error)`
 
-Derives private spend key from given hexadecimal seed \
+Derives private spend key and private view key from given hexadecimal seed \
 Example usage:
 ```go
 hexadecimalSeed := "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8"
-privateSpendKey, _ := monero.DerivePrivateSpendKeyFromHexSeed(hexadecimalSeed)
+privateSpendKey, privateViewKey, _ := monero.DerivePrivateSpendKeyFromHexSeed(hexadecimalSeed)
 fmt.Println(privateSpendKey)
+fmt.Println(privateViewKey)
 > "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08"
+> "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"
 ```
 
+- ### `DerivePrivVKFromPrivSK(privateSpendKey string) (string, error)`
+
+Derives private view key from given private spend key \
+Example usage:
+```go
+privateSpendKey := "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08"
+privateViewKey, _ := monero.DerivePrivateViewKeyFromPrivateSpendKey(privateSpendKey)
+fmt.Println(privateViewKey)
+> "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"
+```
 
 
 
