@@ -2,11 +2,11 @@
 
 You can get started by installing and importing the library into your project with:
 ```bash
-go get "github.com/openmonero/monero.go@latest"
+go get "github.com/openmonero/libmonero@latest"
 ```
 And:
 ```go
-import "github.com/openmonero/monero.go/src"
+import "github.com/openmonero/libmonero/src"
 ```
 
 Then you can use functions in your project:

@@ -9,7 +9,7 @@ Overview list:
 ## Utils
 - ### `Version() string`
 
-Returns the version of the library \
+Returns the version of this library \
 Example usage:
 ```go
 fmt.Println(monero.Version())
@@ -106,7 +106,3 @@ address, _ := monero.DeriveAddressFromPubKeys(pubSpendKey, pubViewKey, "moneroma
 fmt.Println(address)
 > "4AQ3jTJg91yNGTXjo9iWr1ekjBGJ5mM6HEsxKqoKddHnRwJTVJYnyLXeerff6iTys5Eo8dyG87tfqZNS5CcSd7U694YiR8J"
 ```
-
-
-
-

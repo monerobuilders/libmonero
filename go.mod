@@ -1,4 +1,4 @@
-module github.com/openmonero/monero.go
+module github.com/openmonero/libmonero
 
 go 1.20
 
