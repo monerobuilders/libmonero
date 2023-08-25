@@ -11,7 +11,7 @@ import "github.com/openmonero/libmonero/src"
 
 Then you can use functions in your project:
 ```go
-fmt.Println(monero.Version())
+fmt.Println(libmonero.Version())
 ```
 
 # Functions
