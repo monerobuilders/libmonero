@@ -10,13 +10,15 @@
 
 package libmonero
 
-import "regexp"
 
-func Version() string {
-	return "0.1.2"
+func getBalance() {
+	// TODO: Add getBalance function
 }
 
-func ValidateAddress(address string) bool {
-	match, _ := regexp.MatchString(`^4[0-9AB][1-9A-HJ-NP-Za-km-z]{93}$`, address)
-	return match
+func getTransactions() {
+	// TODO: Add getTransactions function
+}
+
+func makeTransfer() {
+	// TODO: Add makeTransfer function
 }

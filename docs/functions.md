@@ -4,7 +4,15 @@ Here you can see all functions in this library
 
 Overview list:
 - [Utils](#utils)
+    - [Version() string](#version-string)
+    - [ValidateAddress(address string)](#validateaddressaddress-string-bool)
 - [Keys](#keys)
+    - [GenerateMnemonicSeed(language string) (string, error)](#generatemnemonicseedlanguage-string-string-error)
+    - [DeriveHexSeedFromMnemonicSeed(mnemonic string, language string) (string, error)](#derivehexseedfrommnemonicseedmnemonic-string-language-string-string-error)
+    - [DerivePrivKeysFromHexSeed(hexSeed string) (string, string, error)](#deriveprivkeysfromhexseedhexseed-string-string-string-error)
+    - [DerivePrivVKFromPrivSK(privateSpendKey string) (string, error)](#deriveprivvkfromprivskprivatespendkey-string-string-error)
+    - [DerivePubKeyFromPrivKey(privateKey string) (string, error)](#derivepubkeyfromprivkeyprivatekey-string-string-error)
+    - [DeriveAddressFromPubKeys(publicSpendKey string, publicViewKey string, network string) (string, error)](#deriveaddressfrompubkeyspublicspendkey-string-publicviewkey-string-network-string-string-error)
 ---
 ## Utils
 - ### `Version() string`
@@ -54,7 +62,7 @@ fmt.Println(hexadecimalSeed)
 > "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8"
 ```
 
-- ### `DerivePrivateKeysFromHexSeed(hexSeed string) (string, string, error)`
+- ### `DerivePrivKeysFromHexSeed(hexSeed string) (string, string, error)`
 
 Derives private spend key and private view key from given hexadecimal seed \
 Example usage:
@@ -78,7 +86,7 @@ fmt.Println(privateViewKey)
 > "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"
 ```
 
-- ### `DerivePublicKeyFromPrivateKey(privateKey string) (string, error)`
+- ### `DerivePubKeyFromPrivKey(privateKey string) (string, error)`
 
 Derives public key from given private key (can be spend key or view key) \
 Example usage:
