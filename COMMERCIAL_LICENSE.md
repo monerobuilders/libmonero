@@ -14,7 +14,7 @@ Commercial Use refers to any use of the Software by the Licensee for the purpose
 
 ## Fees
 
-In consideration for the rights granted under this Agreement, the Licensee agrees to pay the Licensor any fees agreed by Licensee and the Licensor.
+In consideration for the rights granted under this Agreement, the Licensee agrees to pay the Licensor any fees agreed by both Licensee and the Licensor.
 
 ## Support and Maintenance
 
