@@ -2,7 +2,7 @@
 
 You can get started by installing and importing the library into your project with:
 ```bash
-go get "github.com/monumexyz/libmonero@latest"
+go get "github.com/monumexyz/libmonero/src@latest"
 ```
 And:
 ```go
