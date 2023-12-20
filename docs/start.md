@@ -9,7 +9,7 @@ And:
 import "github.com/monumexyz/libmonero/src"
 ```
 
-Then you can use functions in your project:
+Then you can use functions in your project like this:
 ```go
 fmt.Println(libmonero.Version())
 ```
