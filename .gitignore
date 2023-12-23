@@ -1,1 +1,10 @@
+# IDE Configs
 .idea/
+.vscode/
+
+# Build Outputs
+target/
+**/*.rs.bk
+
+# Test environment
+src/main.rs

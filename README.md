@@ -1,9 +1,11 @@
-![](assets/libmonero-logo.png)
+<div style="border-radius: 100px; overflow: hidden">
+    <img src="./assets/libmonero-logo.jpg"/>
+</div>
 
 > DISCLAIMER: This library is still in early development and doesn't have a stable version yet. It is not ready for production use. Use at your own risk.
 
-libmonero is a totally free to use [Monero](https://getmonero.org) library in [Go](https://go.dev) for now. You can use it by taking a look at docs.
-
+libmonero is your go-to library for interacting with the Monero blockchain and ecosystem. Written in Rust, it is fast, safe, and easy to use.
+ 
 ## Usage
 
 Please take a look at [docs](docs/start.md)
