@@ -19,13 +19,13 @@ fn get_checksum_index(array: &[&str], prefix_length: usize) -> usize {
     }
     let mut hasher = Hasher::new();
     hasher.update(trimmed_words.as_bytes());
-    let checksum = usize::try_from(hasher.finalize() as u32).unwrap() % array.len();
-    checksum
+    
+    usize::try_from(hasher.finalize()).unwrap() % array.len()
 }
 
 // Creates a cryptographically secure 1626-word type seed for the given language
 pub fn create_seed(language: &str, is_polyseed: bool) -> Vec<&str> {
-    if (is_polyseed) {
+    if is_polyseed {
         // TODO: Implement polyseed
         panic!("NOT IMPLEMENTED YET")
     } else {
@@ -33,7 +33,7 @@ pub fn create_seed(language: &str, is_polyseed: bool) -> Vec<&str> {
         let mut prefix_len: usize = 3;
         for wordset in WORDSETS1626.iter() {
             if wordset.name == language {
-                prefix_len = wordset.prefix_len as usize;
+                prefix_len = wordset.prefix_len;
                 for _ in 0..24 {
                     let word = secure_random_element(&wordset.words[..]);
                     seed.push(word);
@@ -47,7 +47,7 @@ pub fn create_seed(language: &str, is_polyseed: bool) -> Vec<&str> {
             panic!("Language not found");
         }
         let checksum_index = get_checksum_index(&seed, prefix_len);
-        seed.push(&seed[checksum_index]);
+        seed.push(seed[checksum_index]);
         seed
     }
 }
