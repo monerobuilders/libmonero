@@ -132,7 +132,7 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
             panic!("Invalid word in seed, please check your seed")
         }
 
-        let x: usize = (w1 as isize + n as isize * ((n as isize - w1 as isize + w2 as isize) % n as isize) + n as isize * n as isize * ((n as isize - w2 as isize + w3 as isize) % n as isize)).try_into().unwrap();
+        let x: usize = (w1 + n as isize * ((n as isize - w1 + w2) % n as isize) + n as isize * n as isize * ((n as isize - w2 + w3) % n as isize)).try_into().unwrap();
         if x % n != w1 as usize {
             panic!("An error occured while deriving hex seed, please try again later");
         }
@@ -143,7 +143,7 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
     if the_wordset.prefix_len > 0 {
         let index = get_checksum_index(&mnemonic_seed, the_wordset.prefix_len);
         let expected_checksum_word = &mnemonic_seed[index];
-        if &expected_checksum_word[..the_wordset.prefix_len] != &checksum_word[..the_wordset.prefix_len] {
+        if expected_checksum_word[..the_wordset.prefix_len] != checksum_word[..the_wordset.prefix_len] {
             panic!("Your seed could not be verified via the last word checksum, please check your seed")
         }
     }
