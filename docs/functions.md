@@ -32,7 +32,7 @@ libmonero::is_valid_addr("42wDfAgKWRYcdB7NtrZtabUx2d4jknPmZBT4KS9gxLP4VYBS4S8zH1
 Generates a mnemonic phrase for given language \
 Available languages for now: en
 
-> DISCLAIMER: is_polyseed is not implemented yet \
+> DISCLAIMER: is_polyseed is not implemented yet
 
 Example usage:
 ```rust
