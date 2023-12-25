@@ -1,0 +1,181 @@
+pub(crate) fn sc_reduce32(s: &mut [u8; 32]) {
+    let s0 = 2097151 & load3(s);
+    let s1 = 2097151 & (load4(&s[2..]) >> 5);
+    let s2 = 2097151 & (load3(&s[5..]) >> 2);
+    let s3 = 2097151 & (load4(&s[7..]) >> 7);
+    let s4 = 2097151 & (load4(&s[10..]) >> 4);
+    let s5 = 2097151 & (load3(&s[13..]) >> 1);
+    let s6 = 2097151 & (load4(&s[15..]) >> 6);
+    let s7 = 2097151 & (load3(&s[18..]) >> 3);
+    let s8 = 2097151 & load3(&s[21..]);
+    let s9 = 2097151 & (load4(&s[23..]) >> 5);
+    let s10 = 2097151 & (load3(&s[26..]) >> 2);
+    let s11 = load4(&s[28..]) >> 7;
+    let mut s12 = 0;
+    let mut carry = [0i64; 12];
+
+    carry[0] = (s0 + (1 << 20)) >> 21;
+    let mut s1 = s1 + carry[0];
+    let mut s0 = s0 - (carry[0] << 21);
+    carry[2] = (s2 + (1 << 20)) >> 21;
+    let mut s3 = s3 + carry[2];
+    let mut s2 = s2 - (carry[2] << 21);
+    carry[4] = (s4 + (1 << 20)) >> 21;
+    let mut s5 = s5 + carry[4];
+    let mut s4 = s4 - (carry[4] << 21);
+    carry[6] = (s6 + (1 << 20)) >> 21;
+    let mut s7 = s7 + carry[6];
+    let mut s6 = s6 - (carry[6] << 21);
+    carry[8] = (s8 + (1 << 20)) >> 21;
+    let mut s9 = s9 + carry[8];
+    let mut s8 = s8 - (carry[8] << 21);
+    carry[10] = (s10 + (1 << 20)) >> 21;
+    let mut s11 = s11 + carry[10];
+    let mut s10 = s10 - (carry[10] << 21);
+
+    carry[1] = (s1 + (1 << 20)) >> 21;
+    s2 = s2 + carry[1];
+    s1 = s1 - (carry[1] << 21);
+    carry[3] = (s3 + (1 << 20)) >> 21;
+    s4 = s4 + carry[3];
+    s3 = s3 - (carry[3] << 21);
+    carry[5] = (s5 + (1 << 20)) >> 21;
+    s6 = s6 + carry[5];
+    s5 = s5 - (carry[5] << 21);
+    carry[7] = (s7 + (1 << 20)) >> 21;
+    s8 = s8 + carry[7];
+    s7 = s7 - (carry[7] << 21);
+    carry[9] = (s9 + (1 << 20)) >> 21;
+    s10 = s10 + carry[9];
+    s9 = s9 - (carry[9] << 21);
+    carry[11] = (s11 + (1 << 20)) >> 21;
+    s12 = s12 + carry[11];
+    s11 = s11 - (carry[11] << 21);
+
+    s0 = s0 + s12 * 666643;
+    s1 = s1 + s12 * 470296;
+    s2 = s2 + s12 * 654183;
+    s3 = s3 - s12 * 997805;
+    s4 = s4 + s12 * 136657;
+    s5 = s5 - s12 * 683901;
+    s12 = 0;
+
+    carry[0] = s0 >> 21;
+    s1 = s1 + carry[0];
+    s0 = s0 - (carry[0] << 21);
+    carry[1] = s1 >> 21;
+    s2 = s2 + carry[1];
+    s1 = s1 - (carry[1] << 21);
+    carry[2] = s2 >> 21;
+    s3 = s3 + carry[2];
+    s2 = s2 - (carry[2] << 21);
+    carry[3] = s3 >> 21;
+    s4 = s4 + carry[3];
+    s3 = s3 - (carry[3] << 21);
+    carry[4] = s4 >> 21;
+    s5 = s5 + carry[4];
+    s4 = s4 - (carry[4] << 21);
+    carry[5] = s5 >> 21;
+    s6 = s6 + carry[5];
+    s5 = s5 - (carry[5] << 21);
+    carry[6] = s6 >> 21;
+    s7 = s7 + carry[6];
+    s6 = s6 - (carry[6] << 21);
+    carry[7] = s7 >> 21;
+    s8 = s8 + carry[7];
+    s7 = s7 - (carry[7] << 21);
+    carry[8] = s8 >> 21;
+    s9 = s9 + carry[8];
+    s8 = s8 - (carry[8] << 21);
+    carry[9] = s9 >> 21;
+    s10 = s10 + carry[9];
+    s9 = s9 - (carry[9] << 21);
+    carry[10] = s10 >> 21;
+    s11 = s11 + carry[10];
+    s10 = s10 - (carry[10] << 21);
+    carry[11] = s11 >> 21;
+    s12 = s12 + carry[11];
+    s11 = s11 - (carry[11] << 21);
+
+    s0 = s0 + s12 * 666643;
+    s1 = s1 + s12 * 470296;
+    s2 = s2 + s12 * 654183;
+    s3 = s3 - s12 * 997805;
+    s4 = s4 + s12 * 136657;
+    s5 = s5 - s12 * 683901;
+
+    carry[0] = s0 >> 21;
+    s1 = s1 + carry[0];
+    s0 = s0 - (carry[0] << 21);
+    carry[1] = s1 >> 21;
+    s2 = s2 + carry[1];
+    s1 = s1 - (carry[1] << 21);
+    carry[2] = s2 >> 21;
+    s3 = s3 + carry[2];
+    s2 = s2 - (carry[2] << 21);
+    carry[3] = s3 >> 21;
+    s4 = s4 + carry[3];
+    s3 = s3 - (carry[3] << 21);
+    carry[4] = s4 >> 21;
+    s5 = s5 + carry[4];
+    s4 = s4 - (carry[4] << 21);
+    carry[5] = s5 >> 21;
+    s6 = s6 + carry[5];
+    s5 = s5 - (carry[5] << 21);
+    carry[6] = s6 >> 21;
+    s7 = s7 + carry[6];
+    s6 = s6 - (carry[6] << 21);
+    carry[7] = s7 >> 21;
+    s8 = s8 + carry[7];
+    s7 = s7 - (carry[7] << 21);
+    carry[8] = s8 >> 21;
+    s9 = s9 + carry[8];
+    s8 = s8 - (carry[8] << 21);
+    carry[9] = s9 >> 21;
+    s10 = s10 + carry[9];
+    s9 = s9 - (carry[9] << 21);
+    carry[10] = s10 >> 21;
+    s11 = s11 + carry[10];
+    s10 = s10 - (carry[10] << 21);
+
+    s[0] = (s0 >> 0) as u8;
+    s[1] = (s0 >> 8) as u8;
+    s[2] = ((s0 >> 16) | (s1 << 5)) as u8;
+    s[3] = (s1 >> 3) as u8;
+    s[4] = (s1 >> 11) as u8;
+    s[5] = ((s1 >> 19) | (s2 << 2)) as u8;
+    s[6] = (s2 >> 6) as u8;
+    s[7] = ((s2 >> 14) | (s3 << 7)) as u8;
+    s[8] = (s3 >> 1) as u8;
+    s[9] = (s3 >> 9) as u8;
+    s[10] = ((s3 >> 17) | (s4 << 4)) as u8;
+    s[11] = (s4 >> 4) as u8;
+    s[12] = (s4 >> 12) as u8;
+    s[13] = ((s4 >> 20) | (s5 << 1)) as u8;
+    s[14] = (s5 >> 7) as u8;
+    s[15] = ((s5 >> 15) | (s6 << 6)) as u8;
+    s[16] = (s6 >> 2) as u8;
+    s[17] = (s6 >> 10) as u8;
+    s[18] = ((s6 >> 18) | (s7 << 3)) as u8;
+    s[19] = (s7 >> 5) as u8;
+    s[20] = (s7 >> 13) as u8;
+    s[21] = (s8 >> 0) as u8;
+    s[22] = (s8 >> 8) as u8;
+    s[23] = ((s8 >> 16) | (s9 << 5)) as u8;
+    s[24] = (s9 >> 3) as u8;
+    s[25] = (s9 >> 11) as u8;
+    s[26] = ((s9 >> 19) | (s10 << 2)) as u8;
+    s[27] = (s10 >> 6) as u8;
+    s[28] = ((s10 >> 14) | (s11 << 7)) as u8;
+    s[29] = (s11 >> 1) as u8;
+    s[30] = (s11 >> 9) as u8;
+    s[31] = (s11 >> 17) as u8;
+}
+
+fn load3(input: &[u8]) -> i64 {
+    i64::from(input[0]) | (i64::from(input[1]) << 8) | (i64::from(input[2]) << 16)
+}
+
+fn load4(input: &[u8]) -> i64 {
+    i64::from(input[0]) | (i64::from(input[1]) << 8) | (i64::from(input[2]) << 16) | (i64::from(input[3]) << 24)
+}

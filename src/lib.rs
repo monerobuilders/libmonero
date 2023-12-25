@@ -11,6 +11,7 @@
 pub mod utils;
 pub mod keys;
 pub mod mnemonics;
+pub mod ed25519;
 
 pub use utils::*;
 pub use keys::*;

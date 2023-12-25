@@ -5,7 +5,7 @@ Here is a list of all functions in this project:
 - [Utils](#utils)
     - [is_valid_addr(address: &str) -> bool](#is_valid_addraddress-str---bool)
 - [Keys](#keys)
-    - [generate_seed(language: &str, is_polyseed: bool) -> Vec<&str>](#generate_seedlanguage-str-is_polyseed-bool---vecstr)
+    - [generate_seed(language: &str, seed_type: &str) -> Vec<&str>](#generate_seedlanguage-str-seed_type-str---vecstr)
     - [derive_hex_seed(mnemonic_seed: Vec<&str>) -> String](#derive_hex_seedmnemonic_seed-vecstr---string)
 
 
@@ -27,18 +27,20 @@ libmonero::is_valid_addr("42wDfAgKWRYcdB7NtrZtabUx2d4jknPmZBT4KS9gxLP4VYBS4S8zH1
 
 ## Keys
 
-- ### `generate_seed(language: &str, is_polyseed: bool) -> Vec<&str>`
+- ### `generate_seed(language: &str, seed_type: &str) -> Vec<&str>`
 
-Generates a mnemonic phrase for given language \
-Available languages for now: en
+Generates a mnemonic phrase for given language and type \
+Available types for now:
+- `1626`: `en` (24-word mnemonic)
+- `polyseed` (16-word mnemonic)
 
-> DISCLAIMER: is_polyseed is not implemented yet
+> DISCLAIMER: polyseed is not implemented yet
 
 Example usage:
 ```rust
 use libmonero::generate_seed;
 
-let mnemonic = generate_seed("en", false);
+let mnemonic = generate_seed("en", "1626");
 println!("{:?}", mnemonic);
 > ["tissue", "raking", "haunted", "huts", "afraid", "volcano", "howls", "liar", "egotistic", "befit", "rounded", "older", "bluntly", "imbalance", "pivot", "exotic", "tuxedo", "amaze", "mostly", "lukewarm", "macro", "vocal", "hounded", "biplane", "rounded"]
 ```

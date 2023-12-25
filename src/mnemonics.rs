@@ -9,14 +9,14 @@
  */
 
 // Wordset type that defines name, prefix length for trimming and list of words
-pub(crate) struct Wordset {
+pub(crate) struct Wordset1626 {
     pub name: &'static str,
     pub prefix_len: usize,
     pub words: [&'static str; 1626],
 }
 
 // All 1626-word type wordsets
-pub(crate) static WORDSETS1626: [Wordset; 1] = [Wordset{
+pub(crate) static WORDSETS1626: [Wordset1626; 1] = [Wordset1626{
     name: "en",
     prefix_len: 3,
     words: [
