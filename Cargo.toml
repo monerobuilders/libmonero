@@ -1,7 +1,15 @@
 [package]
 name = "libmonero"
+description = "Ultimate Rust Monero Library"
 version = "0.1.4"
 edition = "2021"
+license = "MPL-2.0"
+homepage = "https://github.com/monumexyz/libmonero"
+documentation = "https://github.com/monumexyz/libmonero/blob/main/docs/start.md"
+repository = "https://github.com/monumexyz/libmonero"
+readme = "README.md"
+keywords = ["monero", "monero-library"]
+categories = ["monero", "monero-library"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
