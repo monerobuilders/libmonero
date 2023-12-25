@@ -8,3 +8,4 @@ target/
 
 # Test environment
 src/main.rs
+old/
