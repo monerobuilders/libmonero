@@ -6,7 +6,7 @@ To get started, you will need to install the library. You can do this by running
 ```bash
 cargo add libmonero
 ```
-After that, you can import the library into your project by adding the following line to your code:
+After that, you can import the library into your project by adding `use libmonero;` to the top of your file. For example:
 ```rust
 use libmonero::generate_seed;
 ```
