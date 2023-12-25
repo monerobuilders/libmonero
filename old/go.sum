@@ -1,8 +1,0 @@
-github.com/ebfe/keccak v0.0.0-20150115210727-5cc570678d1b h1:BMyjwV6Fal/Ffphi4dJfulSxMeDl0xFS2vs5QLr6rsI=
-github.com/ebfe/keccak v0.0.0-20150115210727-5cc570678d1b/go.mod h1:fnviDXB7GJWiSUI9thIXmk9QKM8Rhj1JV/LcMRzkiVA=
-github.com/paxosglobal/moneroutil v0.0.0-20170611151923-33d7e0c11a62 h1:H9iBgEbaabd321ZIpaF43WMS98929d4U6koFxp/4haE=
-github.com/paxosglobal/moneroutil v0.0.0-20170611151923-33d7e0c11a62/go.mod h1:CU5uajdmsxZqRnTa6wRhJTCw0NCpDxlAsnLstpBcbD4=
-golang.org/x/crypto v0.10.0 h1:LKqV2xt9+kDzSTfOhx4FrkEBcMrAgHSYgzywV9zcGmM=
-golang.org/x/crypto v0.10.0/go.mod h1:o4eNf7Ede1fv+hwOwZsTHl9EsPFO6q6ZvYR8vYfY45I=
-golang.org/x/sys v0.9.0 h1:KS/R3tvhPqvJvwcKfnBHJwwthS11LRhmM5D59eEXa0s=
-golang.org/x/sys v0.9.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
