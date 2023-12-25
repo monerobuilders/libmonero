@@ -51,6 +51,7 @@ pub fn generate_seed(language: &str, is_polyseed: bool) -> Vec<&str> {
     }
 }
 
+// Swaps endianness of a 4-byte string
 fn swap_endian_4_byte(s: &str) -> String {
     if s.len() != 8 {
         panic!("Invalid length of string");
@@ -58,11 +59,12 @@ fn swap_endian_4_byte(s: &str) -> String {
     format!("{}{}{}{}", &s[6..8], &s[4..6], &s[2..4], &s[0..2])
 }
 
+// Finds index of a given word in a given array
 fn find_index(array: &[&str], word: &str) -> isize {
     array.iter().position(|&x| x == word).map(|i| i as isize).unwrap_or(-1)
 }
 
-
+// Derives hex seed from given mnemonic seed
 pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
     // Find the wordset for the given seed
     let mut the_wordset = &Wordset {
@@ -83,8 +85,8 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
     }
 
     // Declare variables for later use
-    let mut out = String::new();
-    let n = the_wordset.words.len();
+    let mut hex_seed = String::new();
+    let ws_word_len = the_wordset.words.len();
     let mut checksum_word = String::new();
 
     // Check if seed is valid
@@ -132,14 +134,15 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
             panic!("Invalid word in seed, please check your seed")
         }
 
-        let x: usize = (w1 + n as isize * ((n as isize - w1 + w2) % n as isize) + n as isize * n as isize * ((n as isize - w2 + w3) % n as isize)).try_into().unwrap();
-        if x % n != w1 as usize {
+        let x: usize = (w1 + ws_word_len as isize * ((ws_word_len as isize - w1 + w2) % ws_word_len as isize) + ws_word_len as isize * ws_word_len as isize * ((ws_word_len as isize - w2 + w3) % ws_word_len as isize)).try_into().unwrap();
+        if x % ws_word_len != w1 as usize {
             panic!("An error occured while deriving hex seed, please try again later");
         }
         let swapped = swap_endian_4_byte(&format!("{:08x}", x));
-        out += &swapped;
+        hex_seed += &swapped;
     }
 
+    // Verify checksum
     if the_wordset.prefix_len > 0 {
         let index = get_checksum_index(&mnemonic_seed, the_wordset.prefix_len);
         let expected_checksum_word = &mnemonic_seed[index];
@@ -147,5 +150,6 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
             panic!("Your seed could not be verified via the last word checksum, please check your seed")
         }
     }
-    out
+
+    hex_seed
 }
