@@ -7,7 +7,7 @@ Here is a list of all functions in this project:
 - [Keys](#keys)
     - [generate_seed(language: &str, seed_type: &str) -> Vec<&str>](#generate_seedlanguage-str-seed_type-str---vecstr)
     - [derive_hex_seed(mnemonic_seed: Vec<&str>) -> String](#derive_hex_seedmnemonic_seed-vecstr---string)
-    - [derive_priv_keys(hex_seed: String) -> Vec<String>](#derive_priv_keyshex_seed-string---vecstring)
+    - [derive_priv_keys(hex_seed: String) -> Vec<String\>](#derive_priv_keyshex_seed-string---vecstring)
     - [derive_priv_vk_from_priv_sk(private_spend_key: String) -> String](#derive_priv_vk_from_priv_skprivate_spend_key-string---string)
     - [derive_pub_key(private_key: String) -> String](#derive_pub_keyprivate_key-string---string)
     - [derive_address(public_spend_key: String, public_view_key: String, network: i8) -> String](#derive_addresspublic_spend_key-string-public_view_key-string-network-i8---string)
