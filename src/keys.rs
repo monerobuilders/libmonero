@@ -273,7 +273,7 @@ pub fn derive_pub_key(private_key: String) -> String {
     public_key
 }
 
-// Derives public address from given public spend and view keys
+// Derives public address from given public spend and view keys and network
 pub fn derive_address(public_spend_key: String, public_view_key: String, network: i8) -> String {
     let network_byte = match network {
         0 => vec![0x12], // Monero mainnet
