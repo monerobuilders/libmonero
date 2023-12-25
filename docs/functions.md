@@ -30,6 +30,7 @@ libmonero::is_valid_addr("42wDfAgKWRYcdB7NtrZtabUx2d4jknPmZBT4KS9gxLP4VYBS4S8zH1
 - ### `generate_seed(language: &str, is_polyseed: bool) -> Vec<&str>`
 
 Generates a mnemonic phrase for given language \
+Available languages for now: en
 > DISCLAIMER: is_polyseed is not implemented yet \
 Example usage:
 ```rust
