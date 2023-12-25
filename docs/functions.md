@@ -5,8 +5,8 @@ Here is a list of all functions in this project:
 - [Utils](#utils)
     - [is_valid_addr(address: &str) -> bool](#is_valid_addraddress-str---bool)
 - [Keys](#keys)
-    - [generate_seed(language: &str, is_polyseed: bool) -> Vec<&str>](#generate_seedlanguage-str-is_polyseed-bool---vec-str)
-    - [derive_hex_seed(mnemonic_seed: Vec<&str>) -> String](#derive_hex_seedmnemonic_seed-vec-str---string)
+    - [generate_seed(language: &str, is_polyseed: bool) -> Vec<&str>](#generate_seedlanguage-str-is_polyseed-bool---vecstr)
+    - [derive_hex_seed(mnemonic_seed: Vec<&str>) -> String](#derive_hex_seedmnemonic_seed-vecstr---string)
 
 
 ## Utils
