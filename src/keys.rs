@@ -9,7 +9,7 @@
  */
 
 use crate::ed25519::sc_reduce32;
-use crate::mnemonics::{Wordset1626, WORDSETS1626};
+use crate::wordsets::{WordsetOriginal, WORDSETSORIGINAL};
 use crc32fast::Hasher;
 use curve25519_dalek::constants::ED25519_BASEPOINT_TABLE;
 use curve25519_dalek::{EdwardsPoint, Scalar};
@@ -38,10 +38,10 @@ fn get_checksum_index(array: &[&str], prefix_length: usize) -> usize {
 }
 
 // Generates a cryptographically secure 1626-word type seed for given language
-fn generate1626seed(language: &str) -> Vec<&str> {
+fn generate_original_seed(language: &str) -> Vec<&str> {
     let mut seed: Vec<&str> = Vec::new();
     let mut prefix_len: usize = 3;
-    for wordset in WORDSETS1626.iter() {
+    for wordset in WORDSETSORIGINAL.iter() {
         if wordset.name == language {
             prefix_len = wordset.prefix_len;
             for _ in 0..24 {
@@ -65,125 +65,79 @@ fn generate1626seed(language: &str) -> Vec<&str> {
 
 // Creates a cryptographically secure seed of given type and language
 pub fn generate_seed<'a>(language: &'a str, seed_type: &'a str) -> Vec<&'a str> {
+    let seed;
     match seed_type {
-        "1626" => generate1626seed(language),
+        "original" => seed = generate_original_seed(language),
         "polyseed" => panic!("Polyseed not implemented yet"),
         _ => panic!("Invalid seed type"),
     }
+    return seed;
 }
 
 // Swaps endianness of a 4-byte string
 fn swap_endian_4_byte(s: &str) -> String {
-    if s.len() != 8 {
-        panic!("Invalid length of string");
-    }
     format!("{}{}{}{}", &s[6..8], &s[4..6], &s[2..4], &s[0..2])
-}
-
-// Finds index of a given word in a given array
-fn find_index(array: &[&str], word: &str) -> isize {
-    array
-        .iter()
-        .position(|&x| x == word)
-        .map(|i| i as isize)
-        .unwrap_or(-1)
 }
 
 // Derives hex seed from given mnemonic seed
 pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
-    // Find the wordset for the given seed
-    let mut the_wordset = &Wordset1626 {
-        name: "invalid",
+    let mut the_wordset = &WordsetOriginal {
+        name: "x",
         prefix_len: 0,
         words: [""; 1626],
-    }; // This is given for checking in future if the wordset was found
-    for wordset in WORDSETS1626.iter() {
-        for word in wordset.words.iter() {
-            if mnemonic_seed.contains(word) {
-                the_wordset = wordset;
-                break;
-            }
+    };
+    for wordset in WORDSETSORIGINAL.iter() {
+        if mnemonic_seed
+            .iter()
+            .all(|&elem| wordset.words.contains(&elem))
+        {
+            the_wordset = wordset;
+            break;
         }
     }
-    if the_wordset.name == "invalid" {
-        panic!("The wordset could not be found for given seed, please check your seed")
+
+    if the_wordset.name == "x" {
+        panic!("Wordset could not be found for given seed, please check your seed");
     }
 
-    // Declare variables for later use
-    let mut hex_seed = String::new();
-    let ws_word_len = the_wordset.words.len();
-    let mut checksum_word = String::new();
-
-    // Check if seed is valid
-    if (the_wordset.prefix_len == 0 && mnemonic_seed.len() % 3 != 0)
-        || (the_wordset.prefix_len > 0 && mnemonic_seed.len() % 3 == 2)
-    {
-        panic!("You have entered too few words, please check your seed")
-    } else if the_wordset.prefix_len > 0 && mnemonic_seed.len() % 3 == 0 {
-        panic!("You seem to be missing the last word of your seed, please check your seed")
-    } else if the_wordset.prefix_len > 0 {
-        checksum_word = mnemonic_seed.pop().unwrap().to_string();
-    }
-
-    // Get list of truncated words
-    let mut trunc_words: Vec<&str> = Vec::new();
     if the_wordset.prefix_len > 0 {
-        for word in the_wordset.words.iter() {
-            trunc_words.push(&word[..the_wordset.prefix_len]);
-        }
+        mnemonic_seed.pop();
+    }
+
+    let mut trunc_words: Vec<&str> = Vec::new();
+    for word in the_wordset.words.iter() {
+        trunc_words.push(&word[..the_wordset.prefix_len]);
+    }
+
+    if trunc_words.is_empty() {
+        panic!("Something went wrong when decoding your private key, please try again");
     }
 
     // Derive hex seed
+    let mut out = String::new();
+    let n = the_wordset.words.len();
+
     for i in (0..mnemonic_seed.len()).step_by(3) {
-        let w1;
-        let w2;
-        let w3;
+        let (w1, w2, w3): (usize, usize, usize);
         if the_wordset.prefix_len == 0 {
-            w1 = find_index(&the_wordset.words, mnemonic_seed[i]);
-            w2 = find_index(&the_wordset.words, mnemonic_seed[i + 1]);
-            w3 = find_index(&the_wordset.words, mnemonic_seed[i + 2]);
+            w1 = the_wordset.words.iter().position(|&x| x == mnemonic_seed[i]).unwrap_or_else(|| panic!("invalid word in mnemonic"));
+            w2 = the_wordset.words.iter().position(|&x| x == mnemonic_seed[i + 1]).unwrap_or_else(|| panic!("invalid word in mnemonic"));
+            w3 = the_wordset.words.iter().position(|&x| x == mnemonic_seed[i + 2]).unwrap_or_else(|| panic!("invalid word in mnemonic"));
         } else {
-            w1 = find_index(&trunc_words, &mnemonic_seed[i][..the_wordset.prefix_len]);
-            w2 = find_index(
-                &trunc_words,
-                &mnemonic_seed[i + 1][..the_wordset.prefix_len],
-            );
-            w3 = find_index(
-                &trunc_words,
-                &mnemonic_seed[i + 2][..the_wordset.prefix_len],
-            );
+            w1 = trunc_words.iter().position(|&x| x.starts_with(&mnemonic_seed[i][..the_wordset.prefix_len])).unwrap_or_else(|| panic!("invalid word in mnemonic"));
+            w2 = trunc_words.iter().position(|&x| x.starts_with(&mnemonic_seed[i + 1][..the_wordset.prefix_len])).unwrap_or_else(|| panic!("invalid word in mnemonic"));
+            w3 = trunc_words.iter().position(|&x| x.starts_with(&mnemonic_seed[i + 2][..the_wordset.prefix_len])).unwrap_or_else(|| panic!("invalid word in mnemonic"));
         }
 
-        if w1 == -1 || w2 == -1 || w3 == -1 {
-            panic!("Invalid word in seed, please check your seed")
+        let x = w1 + n * (((n - w1) + w2) % n) + n * n * (((n - w2) + w3) % n);
+        if x % n != w1 {
+            panic!("Something went wrong when decoding your private key, please try again");
         }
 
-        let x: usize = (w1
-            + ws_word_len as isize * ((ws_word_len as isize - w1 + w2) % ws_word_len as isize)
-            + ws_word_len as isize
-                * ws_word_len as isize
-                * ((ws_word_len as isize - w2 + w3) % ws_word_len as isize))
-            .try_into()
-            .unwrap();
-        if x % ws_word_len != w1 as usize {
-            panic!("An error occured while deriving hex seed, please try again later");
-        }
-        let swapped = swap_endian_4_byte(&format!("{:08x}", x));
-        hex_seed += &swapped;
+        out += &swap_endian_4_byte(&format!("{:08x}", x));
     }
 
-    // Verify checksum
-    if the_wordset.prefix_len > 0 {
-        let index = get_checksum_index(&mnemonic_seed, the_wordset.prefix_len);
-        let expected_checksum_word = &mnemonic_seed[index];
-        if expected_checksum_word[..the_wordset.prefix_len]
-            != checksum_word[..the_wordset.prefix_len]
-        {
-            panic!("Your seed could not be verified via the last word checksum, please check your seed")
-        }
-    }
-    // Finally, return the hex seed
-    hex_seed
+    out
 }
 
 // Derives private spend and view keys from given hex seed

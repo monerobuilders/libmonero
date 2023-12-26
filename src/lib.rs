@@ -10,8 +10,27 @@
 
 pub mod utils;
 pub mod keys;
-pub mod mnemonics;
 pub mod ed25519;
+pub mod mnemonics {
+    pub mod original {
+        pub mod wordsets;
+        pub mod languages {
+            pub mod chinese_simplified;
+            pub mod dutch;
+            pub mod english;
+            pub mod esperanto;
+            pub mod french;
+            pub mod german;
+            pub mod italian;
+            pub mod japanese;
+            pub mod lojban;
+            pub mod portuguese;
+            pub mod russian;
+            pub mod spanish;
+        }
+    }
+}
 
 pub use utils::*;
 pub use keys::*;
+pub use mnemonics::original::wordsets;

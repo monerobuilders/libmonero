@@ -2,7 +2,7 @@
     <img src="./assets/libmonero-logo.jpg"/>
 </div>
 
-> DISCLAIMER: This library is still in early development and doesn't have a stable version yet. It is not ready for production use. Use at your own risk.
+> DISCLAIMER: This library is still in early development and doesn't have a stable version yet. It is not ready for production use and not cryptographically audited. We are working hard to make it as secure as possible. Please use it at your own risk.
 
 libmonero is your go-to library for interacting with the Monero blockchain and ecosystem. Written in Rust, it is fast, safe, and easy to use.
  
