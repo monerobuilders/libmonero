@@ -35,16 +35,25 @@ libmonero::is_valid_addr("42wDfAgKWRYcdB7NtrZtabUx2d4jknPmZBT4KS9gxLP4VYBS4S8zH1
 
 Generates a mnemonic phrase for given language and type \
 Available types for now:
-- `1626`: `en` (24-word mnemonic)
-- `polyseed` (16-word mnemonic)
-
+- `original`: (25-word original type) 
+    - `en` (English)
+    - `eo` (Esperanto)
+    - `fr` (French)
+    - `it` (Italian)
+    - `jp` (Japanese) (Works but not recommended)
+    - `lj` (Lojban)
+    - `pt` (Portuguese)
+    - `ru` (Russian)
+- `mymonero`: (13-word MyMonero type)
+    - `en`, `eo`, `fr`, `it`, `jp`, `lj`, `pt`, `ru` (same as original)
+- `polyseed` (TO BE IMPLEMENTED)
 > DISCLAIMER: polyseed is not implemented yet
 
 Example usage:
 ```rust
 use libmonero::generate_seed;
 
-let mnemonic = generate_seed("en", "1626");
+let mnemonic = generate_seed("en", "original");
 println!("{:?}", mnemonic);
 > ["tissue", "raking", "haunted", "huts", "afraid", "volcano", "howls", "liar", "egotistic", "befit", "rounded", "older", "bluntly", "imbalance", "pivot", "exotic", "tuxedo", "amaze", "mostly", "lukewarm", "macro", "vocal", "hounded", "biplane", "rounded"]
 ```
