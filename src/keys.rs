@@ -99,7 +99,7 @@ pub fn generate_seed<'a>(language: &'a str, seed_type: &'a str) -> Vec<&'a str> 
         "polyseed" => panic!("Polyseed not implemented yet"),
         _ => panic!("Invalid seed type"),
     }
-    return seed;
+    seed
 }
 
 // Swaps endianness of a 4-byte string
@@ -208,7 +208,7 @@ fn derive_original_priv_keys(hex_seed: String) -> Vec<String> {
     }
     // Turn private spend key into bytes and pass through Keccak256 function
     let priv_spend_key_bytes = hex::decode(priv_spend_key.clone()).unwrap();
-    let priv_view_key_bytes = Keccak256::digest(&priv_spend_key_bytes);
+    let priv_view_key_bytes = Keccak256::digest(priv_spend_key_bytes);
     let mut priv_view_key_array = [0u8; 32];
     priv_view_key_array.copy_from_slice(&priv_view_key_bytes);
     // Pass bytes through sc_reduce32 function to get private view key
@@ -245,7 +245,7 @@ fn derive_mymonero_priv_keys(hex_seed: String) -> Vec<String> {
     let mut priv_view_key_array = [0u8; 32];
     priv_view_key_array.copy_from_slice(&priv_view_key_bytes);
     // Keccak again
-    let priv_view_key_bytes = Keccak256::digest(&priv_view_key_array);
+    let priv_view_key_bytes = Keccak256::digest(priv_view_key_array);
     priv_view_key_array.copy_from_slice(&priv_view_key_bytes);
     // sc_reduce32
     sc_reduce32(&mut priv_view_key_array as &mut [u8; 32]);
@@ -274,7 +274,7 @@ pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
 pub fn derive_priv_vk_from_priv_sk(private_spend_key: String) -> String {
     // Turn private spend key into bytes and pass through Keccak256 function
     let priv_spend_key_bytes = hex::decode(private_spend_key.clone()).unwrap();
-    let priv_view_key_bytes = Keccak256::digest(&priv_spend_key_bytes);
+    let priv_view_key_bytes = Keccak256::digest(priv_spend_key_bytes);
     let mut priv_view_key_array = [0u8; 32];
     priv_view_key_array.copy_from_slice(&priv_view_key_bytes);
     // Pass bytes through sc_reduce32 function to get private view key
@@ -294,9 +294,9 @@ pub fn derive_priv_vk_from_priv_sk(private_spend_key: String) -> String {
 // Performs scalar multiplication of the Ed25519 base point by a given scalar, yielding a corresponding point on the elliptic curve
 fn ge_scalar_mult_base(scalar: &Scalar) -> EdwardsPoint {
     // Scalar multiplication with the base point
-    let result_point = ED25519_BASEPOINT_TABLE.mul(scalar as &Scalar);
+    
     // The result_point now contains the public key
-    result_point
+    ED25519_BASEPOINT_TABLE.mul(scalar as &Scalar)
 }
 
 // Derives public key from given private key, can be either spend or view key
@@ -334,6 +334,6 @@ pub fn derive_address(public_spend_key: String, public_view_key: String, network
     let mut data = [&network_byte[..], &pub_sk_bytes[..], &pub_vk_bytes[..]].concat();
     let hash = Keccak256::digest(&data);
     data.append(&mut hash[..4].to_vec());
-    let address = base58_monero::encode(&data).unwrap();
-    address
+    
+    base58_monero::encode(&data).unwrap()
 }
