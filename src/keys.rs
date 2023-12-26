@@ -37,6 +37,11 @@ fn get_checksum_index(array: &[&str], prefix_length: usize) -> usize {
 
 // Generates a cryptographically secure 1626-type (25-word) seed for given language
 fn generate_original_seed(language: &str) -> Vec<&str> {
+    // Check if language is supported
+    if !WORDSETSORIGINAL.iter().any(|x| x.name == language) {
+        panic!("Language not found");
+    }
+    // Generate seed
     let mut seed: Vec<&str> = Vec::new();
     let mut prefix_len: usize = 3;
     for wordset in WORDSETSORIGINAL.iter() {
@@ -51,8 +56,32 @@ fn generate_original_seed(language: &str) -> Vec<&str> {
             continue;
         }
     }
-    if seed.is_empty() {
+    // Add checksum word
+    let checksum_index = get_checksum_index(&seed, prefix_len);
+    seed.push(seed[checksum_index]);
+    // Finally, return the seed
+    seed
+}
+
+fn generate_mymonero_seed(language: &str) -> Vec<&str> {
+    // Check if language is supported
+    if !WORDSETSORIGINAL.iter().any(|x| x.name == language) {
         panic!("Language not found");
+    }
+    // Generate seed
+    let mut seed: Vec<&str> = Vec::new();
+    let mut prefix_len: usize = 3;
+    for wordset in WORDSETSORIGINAL.iter() {
+        if wordset.name == language {
+            prefix_len = wordset.prefix_len;
+            for _ in 0..12 {
+                let word = secure_random_element(&wordset.words[..]);
+                seed.push(word);
+            }
+            break;
+        } else {
+            continue;
+        }
     }
     // Add checksum word
     let checksum_index = get_checksum_index(&seed, prefix_len);
@@ -66,6 +95,7 @@ pub fn generate_seed<'a>(language: &'a str, seed_type: &'a str) -> Vec<&'a str> 
     let seed;
     match seed_type {
         "original" => seed = generate_original_seed(language),
+        "mymonero" => seed = generate_mymonero_seed(language),
         "polyseed" => panic!("Polyseed not implemented yet"),
         _ => panic!("Invalid seed type"),
     }
@@ -118,16 +148,39 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
     for i in (0..mnemonic_seed.len()).step_by(3) {
         let (w1, w2, w3): (usize, usize, usize);
         if the_wordset.prefix_len == 0 {
-            w1 = the_wordset.words.iter().position(|&x| x == mnemonic_seed[i]).unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
-            w2 = the_wordset.words.iter().position(|&x| x == mnemonic_seed[i + 1]).unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
-            w3 = the_wordset.words.iter().position(|&x| x == mnemonic_seed[i + 2]).unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
+            w1 = the_wordset
+                .words
+                .iter()
+                .position(|&x| x == mnemonic_seed[i])
+                .unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
+            w2 = the_wordset
+                .words
+                .iter()
+                .position(|&x| x == mnemonic_seed[i + 1])
+                .unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
+            w3 = the_wordset
+                .words
+                .iter()
+                .position(|&x| x == mnemonic_seed[i + 2])
+                .unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
         } else {
-            w1 = trunc_words.iter().position(|&x| x.starts_with(&mnemonic_seed[i][..the_wordset.prefix_len])).unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
-            w2 = trunc_words.iter().position(|&x| x.starts_with(&mnemonic_seed[i + 1][..the_wordset.prefix_len])).unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
-            w3 = trunc_words.iter().position(|&x| x.starts_with(&mnemonic_seed[i + 2][..the_wordset.prefix_len])).unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
+            w1 = trunc_words
+                .iter()
+                .position(|&x| x.starts_with(&mnemonic_seed[i][..the_wordset.prefix_len]))
+                .unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
+            w2 = trunc_words
+                .iter()
+                .position(|&x| x.starts_with(&mnemonic_seed[i + 1][..the_wordset.prefix_len]))
+                .unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
+            w3 = trunc_words
+                .iter()
+                .position(|&x| x.starts_with(&mnemonic_seed[i + 2][..the_wordset.prefix_len]))
+                .unwrap_or_else(|| panic!("Invalid word in seed, please check your seed"));
         }
 
-        let x = w1 + wordset_len * (((wordset_len - w1) + w2) % wordset_len) + wordset_len * wordset_len * (((wordset_len - w2) + w3) % wordset_len);
+        let x = w1
+            + wordset_len * (((wordset_len - w1) + w2) % wordset_len)
+            + wordset_len * wordset_len * (((wordset_len - w2) + w3) % wordset_len);
         if x % wordset_len != w1 {
             panic!("Something went wrong when decoding your private key, please try again");
         }
@@ -138,8 +191,7 @@ pub fn derive_hex_seed(mut mnemonic_seed: Vec<&str>) -> String {
     hex_seed
 }
 
-// Derives private spend and view keys from given hex seed
-pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
+fn derive_original_priv_keys(hex_seed: String) -> Vec<String> {
     // Turn hex seed into bytes
     let hex_bytes = hex::decode(hex_seed).unwrap();
     let mut hex_bytes_array = [0u8; 32];
@@ -171,6 +223,51 @@ pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
     }
     // Finally, return the keys
     vec![priv_spend_key, priv_view_key]
+}
+
+fn derive_mymonero_priv_keys(hex_seed: String) -> Vec<String> {
+    // Keccak and sc_reduce32 to get private spend key
+    let hex_bytes = hex::decode(hex_seed).unwrap();
+    let priv_spend_key_bytes = Keccak256::digest(&hex_bytes);
+    let mut priv_spend_key_array = [0u8; 32];
+    priv_spend_key_array.copy_from_slice(&priv_spend_key_bytes);
+    sc_reduce32(&mut priv_spend_key_array as &mut [u8; 32]);
+    let mut priv_spend_key = String::new();
+    for i in (0..priv_spend_key_array.len()).step_by(32) {
+        let mut priv_key = String::new();
+        for j in i..i + 32 {
+            priv_key.push_str(&format!("{:02x}", priv_spend_key_array[j]));
+        }
+        priv_spend_key.push_str(&priv_key);
+    }
+    // Double Keccak and sc_reduce32 of hex_seed to get private view key
+    let priv_view_key_bytes = Keccak256::digest(&hex_bytes);
+    let mut priv_view_key_array = [0u8; 32];
+    priv_view_key_array.copy_from_slice(&priv_view_key_bytes);
+    // Keccak again
+    let priv_view_key_bytes = Keccak256::digest(&priv_view_key_array);
+    priv_view_key_array.copy_from_slice(&priv_view_key_bytes);
+    // sc_reduce32
+    sc_reduce32(&mut priv_view_key_array as &mut [u8; 32]);
+    let mut priv_view_key = String::new();
+    for i in (0..priv_view_key_array.len()).step_by(32) {
+        let mut priv_key = String::new();
+        for j in i..i + 32 {
+            priv_key.push_str(&format!("{:02x}", priv_view_key_array[j]));
+        }
+        priv_view_key.push_str(&priv_key);
+    }
+    // Finally, return the keys
+    vec![priv_spend_key, priv_view_key]
+}
+
+// Derives private spend and view keys from given hex seed
+pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
+    match hex_seed.len() {
+        32 => derive_mymonero_priv_keys(hex_seed),
+        64 => derive_original_priv_keys(hex_seed),
+        _ => panic!("Invalid hex seed"),
+    }
 }
 
 // Derives private view key from private spend key
