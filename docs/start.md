@@ -8,10 +8,10 @@ cargo add libmonero
 ```
 After that, you can import the library into your project by adding `use libmonero;` to the top of your file. For example:
 ```rust
-use libmonero::generate_seed;
+use libmonero::keys::generate_seed;
 ```
 
-# List of contents
+# List Of Contents
 
 - [Structs And Implementations](structs.md)
 - [Functions](functions.md)
