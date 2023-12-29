@@ -11,4 +11,8 @@ After that, you can import the library into your project by adding `use libmoner
 use libmonero::generate_seed;
 ```
 
-You can find list of all functions in the [functions.md](./functions.md) file.
+# List of contents
+
+- [Structs And Implementations](structs.md)
+- [Functions](functions.md)
+- [Examples](examples.md)
