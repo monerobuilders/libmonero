@@ -16,11 +16,11 @@ And many more features...
  
 ## Usage
 
-Add the library to your project and use the functions:
+Add the library to your project and use the functions: \
 ```cargo add libmonero```
 
 For more details, please take a look at [docs](docs/start.md)
 
 ## Licensing
 
-This project is licensed under the [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/) license. You are almost totally free to use it in your projects. Please take a look at [LICENSE.md](LICENSE.md) for more information.
+This project is licensed under the MIT License. Please take a look at [LICENSE.md](LICENSE.md) for more information.
