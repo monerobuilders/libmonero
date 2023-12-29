@@ -1,3 +1,5 @@
+# This script adds a copyright header to all files in the src folder except for the ones in the ignore list
+
 import os
 
 path = "../src"
