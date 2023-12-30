@@ -5,6 +5,7 @@
 # Build Outputs
 target/
 **/*.rs.bk
+Cargo.lock
 
 # Test environment
 src/main.rs
