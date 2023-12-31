@@ -28,17 +28,12 @@ pub mod mnemonics {
             pub mod spanish;
         }
     }
-    pub mod polyseed {
-        pub mod wordsets;
-        pub mod languages {
-            pub mod english;
-        }
-    }
 }
 pub mod crypt {
     pub mod ed25519;
 }
 pub mod wallet;
+pub mod blocks;
 
 pub use utils::*;
 pub use keys::*;

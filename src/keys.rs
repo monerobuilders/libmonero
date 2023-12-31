@@ -9,17 +9,16 @@
  */
 
 //! # Keys
-//! 
+//!
 //! This module is for everything related to keys, such as generating seeds, deriving keys from seeds, deriving public keys from private keys, and deriving addresses from public keys.
 
-use std::ops::Mul;
 use crate::crypt::ed25519::sc_reduce32;
-use crate::mnemonics::polyseed::wordsets::{WordsetPolyseed, WORDSETSPOLYSEED};
 use crate::wordsets::{WordsetOriginal, WORDSETSORIGINAL};
 use crc32fast::Hasher;
 use curve25519_dalek::{constants::ED25519_BASEPOINT_TABLE, EdwardsPoint, Scalar};
 use rand::Rng;
 use sha3::{Digest, Keccak256};
+use std::ops::Mul;
 
 /// Returns cryptographically secure random element of the given array
 fn secure_random_element<'x>(array: &'x [&'x str]) -> &'x str {
@@ -95,38 +94,13 @@ fn generate_mymonero_seed(language: &str) -> Vec<&str> {
     seed
 }
 
-fn secure_random_bits(bit_length: usize) -> Vec<bool> {
-    let mut rng = rand::thread_rng();
-    let mut bits: Vec<bool> = Vec::new();
-    for _ in 0..bit_length {
-        bits.push(rng.gen_bool(0.5));
-    }
-    bits
-}
-
-/// Generates a cryptographically secure Polyseed-type (16-word) seed for given language
-fn generate_polyseed_seed(language: &str) -> Vec<&str> {
-    // Find wordset for given language
-    if !WORDSETSPOLYSEED.iter().any(|x| x.name == language) {
-        panic!("Language not found");
-    }
-    // Get birthday in rounded seconds since UNIX epoch without external libs
-    let birthday = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-    let birthday = birthday - (birthday % 2629746);
-    // Generate 150-bit secret seed
-    let mut secret_seed: Vec<bool> = secure_random_bits(150);
-}
-
 /// Creates a cryptographically secure seed of given type and language
 pub fn generate_seed(language: &str, seed_type: &str) -> Vec<String> {
     let seed;
     match seed_type {
         "original" => seed = generate_original_seed(language),
         "mymonero" => seed = generate_mymonero_seed(language),
-        "polyseed" => seed = generate_polyseed_seed(language),
+        "polyseed" => panic!("Polyseed not yet implemented yet"),
         _ => panic!("Invalid seed type"),
     }
     let mut seed_string: Vec<String> = Vec::new();
@@ -330,7 +304,7 @@ pub fn derive_priv_vk_from_priv_sk(private_spend_key: String) -> String {
 /// Performs scalar multiplication of the Ed25519 base point by a given scalar, yielding a corresponding point on the elliptic curve
 fn ge_scalar_mult_base(scalar: &Scalar) -> EdwardsPoint {
     // Scalar multiplication with the base point
-    
+
     // The result_point now contains the public key
     ED25519_BASEPOINT_TABLE.mul(scalar as &Scalar)
 }
@@ -359,7 +333,7 @@ pub fn derive_pub_key(private_key: String) -> String {
 }
 
 /// Derives public address from given public spend and view keys and network
-pub fn derive_address(public_spend_key: String, public_view_key: String, network: i8) -> String {
+pub fn derive_address(public_spend_key: String, public_view_key: String, network: u8) -> String {
     let network_byte = match network {
         0 => vec![0x12], // Monero mainnet
         1 => vec![0x35], // Monero testnet
@@ -370,6 +344,6 @@ pub fn derive_address(public_spend_key: String, public_view_key: String, network
     let mut data = [&network_byte[..], &pub_sk_bytes[..], &pub_vk_bytes[..]].concat();
     let hash = Keccak256::digest(&data);
     data.append(&mut hash[..4].to_vec());
-    
+
     base58_monero::encode(&data).unwrap()
 }

@@ -10,9 +10,51 @@
 
 //! # Wallet
 //! 
-//! This module contains the wallet struct and its methods.
+//! This module contains everything about wallets
 
+use std::collections::HashMap;
 use crate::keys;
+use tokio;
+
+/// DaemonNode struct contains all necessary and additional information about a daemon node
+pub struct DaemonNode {
+    pub url: String,
+    pub port: u16,
+    pub tls: bool,
+}
+
+/// DaemonNode functions etc.
+impl DaemonNode {
+    /// Returns Stack Wallet's default node
+    pub fn stack_wallet_default() -> DaemonNode {
+        DaemonNode {
+            url: "monero.stackwallet.com".to_string(),
+            port: 18081,
+            tls: false
+        }
+    }
+
+    /// Returns Cake Wallet's default node
+    pub fn cake_wallet_default() -> DaemonNode {
+        DaemonNode {
+            url: "xmr-node.cakewallet.com".to_string(),
+            port: 18081,
+            tls: false
+        }
+    }
+}
+
+/// Transactions struct contains all the information about a single transaction
+pub struct Transaction {
+    pub sender: String,
+    pub receiver: String,
+    pub amount: u64,
+    pub timestamp: u64,
+    pub block_height: u64,
+    pub tx_hash: String,
+    pub tx_fee: u64,
+    pub additional_data: HashMap<String, String>
+}
 
 /// Wallet struct contains all the information about a wallet
 pub struct Wallet {
@@ -22,13 +64,18 @@ pub struct Wallet {
     pub priv_vk: String,
     pub pub_sk: String,
     pub pub_vk: String,
-    pub address: String,
+    pub main_address: String,
+    pub sub_adresses: Vec<String>,
+    pub transactions: Vec<Transaction>,
+    pub main_node: DaemonNode,
+    /// Record of processes, used internally, don't change manually unless specified
+    pub processes: HashMap<String, String>
 }
 
 /// Wallet implementation
 impl Wallet {
     /// Creates a new wallet with given parameters
-    pub fn new(language: &str, seed_type: &str, network: i8) -> Wallet {
+    pub fn new(language: &str, seed_type: &str, network: u8, default_node: DaemonNode) -> Wallet {
         let mnemonic = keys::generate_seed(language, seed_type);
         let hex_seed = keys::derive_hex_seed(mnemonic.clone());
         let priv_keys = keys::derive_priv_keys(hex_seed.clone());
@@ -44,7 +91,41 @@ impl Wallet {
             priv_vk: priv_vk.to_string(),
             pub_sk: pub_sk,
             pub_vk: pub_vk,
-            address: address,
+            main_address: address,
+            sub_adresses: Vec::new(),
+            transactions: Vec::new(),
+            main_node: default_node,
+            processes: HashMap::new()
+        }
+    }
+
+    /// Starts scanning transactions from a given block height
+    #[tokio::main]
+    pub async fn start_scanning(&mut self) {
+        self.processes.insert("scan".to_string(), "running".to_string());
+    }
+
+    /// Opens a wallet with given mnemonic and network
+    pub fn open_wallet(mnemonic: Vec<String>, network: u8, default_node: DaemonNode) -> Wallet {
+        let hex_seed = keys::derive_hex_seed(mnemonic.clone());
+        let priv_keys = keys::derive_priv_keys(hex_seed.clone());
+        let priv_sk = &priv_keys[0];
+        let priv_vk = &priv_keys[1];
+        let pub_sk = keys::derive_pub_key(priv_sk.to_string());
+        let pub_vk = keys::derive_pub_key(priv_vk.to_string());
+        let address = keys::derive_address(pub_sk.clone(), pub_vk.clone(), network);
+        Wallet {
+            mnemonic: mnemonic,
+            hex_seed: hex_seed,
+            priv_sk: priv_sk.to_string(),
+            priv_vk: priv_vk.to_string(),
+            pub_sk: pub_sk,
+            pub_vk: pub_vk,
+            main_address: address,
+            sub_adresses: Vec::new(),
+            transactions: Vec::new(),
+            main_node: default_node,
+            processes: HashMap::new()
         }
     }
 }
