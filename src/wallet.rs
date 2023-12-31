@@ -85,12 +85,12 @@ impl Wallet {
         let pub_vk = keys::derive_pub_key(priv_vk.to_string());
         let address = keys::derive_address(pub_sk.clone(), pub_vk.clone(), network);
         Wallet {
-            mnemonic: mnemonic,
-            hex_seed: hex_seed,
+            mnemonic,
+            hex_seed,
             priv_sk: priv_sk.to_string(),
             priv_vk: priv_vk.to_string(),
-            pub_sk: pub_sk,
-            pub_vk: pub_vk,
+            pub_sk,
+            pub_vk,
             main_address: address,
             sub_adresses: Vec::new(),
             transactions: Vec::new(),
@@ -115,12 +115,12 @@ impl Wallet {
         let pub_vk = keys::derive_pub_key(priv_vk.to_string());
         let address = keys::derive_address(pub_sk.clone(), pub_vk.clone(), network);
         Wallet {
-            mnemonic: mnemonic,
-            hex_seed: hex_seed,
+            mnemonic,
+            hex_seed,
             priv_sk: priv_sk.to_string(),
             priv_vk: priv_vk.to_string(),
-            pub_sk: pub_sk,
-            pub_vk: pub_vk,
+            pub_sk,
+            pub_vk,
             main_address: address,
             sub_adresses: Vec::new(),
             transactions: Vec::new(),

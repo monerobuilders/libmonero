@@ -9,10 +9,7 @@ use crate::DaemonNode;
 pub struct Block {}
 
 fn is_valid_url(url_str: &str) -> bool {
-    match Url::parse(url_str) {
-        Ok(_) => true,
-        Err(_) => false,
-    }
+    Url::parse(url_str).is_ok()
 }
 
 /// Tries to decode a block hash and returns a Block struct if successful
