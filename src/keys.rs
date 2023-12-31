@@ -303,9 +303,6 @@ pub fn derive_priv_vk_from_priv_sk(private_spend_key: String) -> String {
 
 /// Performs scalar multiplication of the Ed25519 base point by a given scalar, yielding a corresponding point on the elliptic curve
 fn ge_scalar_mult_base(scalar: &Scalar) -> EdwardsPoint {
-    // Scalar multiplication with the base point
-
-    // The result_point now contains the public key
     ED25519_BASEPOINT_TABLE.mul(scalar as &Scalar)
 }
 

@@ -20,7 +20,7 @@ libmonero is a library for the Monero cryptocurrency written in Rust. It is desi
 - Many language support for seeds: en, eo, fr, it, ja, pt, ru, lj...
 - Hexadecimal seed, private spend and view keys, address derivation
 
-And many more features...
+And many more features... ([Roadmap](#roadmap))
  
 ## Usage
 
@@ -32,6 +32,14 @@ For more details, please take a look at [docs](docs/start.md)
 ## Licensing
 
 This project is licensed under the MIT License. Please take a look at [LICENSE.md](LICENSE.md) for more information.
+
+## Roadmap
+
+- [x] Mnemonic generation, key and address derivation
+- [x] Support for MyMonero seeds
+- [ ] Calculating balance for wallet
+- [ ] Ability to make outgoing transactions and announcing it to network
+- [ ] Support Polyseed
 
 ## Why another library?
 
