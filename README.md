@@ -6,7 +6,8 @@
 [![Crates.io](https://img.shields.io/crates/v/libmonero.svg)](https://crates.io/crates/libmonero)
 [![Docs](https://docs.rs/libmonero/badge.svg)](https://docs.rs/libmonero)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Dependency Status](https://deps.rs/repo/github/monumexyz/libmonero/status.svg)](https://deps.rs/repo/github/monero-rs/libmonero)
+[![Dependency Status](https://deps.rs/repo/github/monumexyz/libmonero/status.svg)](https://deps.rs/repo/github/monumexyz/libmonero)
+[![Matrix](https://img.shields.io/badge/Matrix-Monume-white?logo=matrix&labelColor=grey&logoColor=white)](https://matrix.to/#/#monume:matrix.org)
 
 > DISCLAIMER: This library is still in early development and doesn't have a stable version yet. It is not ready for production use and not cryptographically audited. We are working hard to make it as secure as possible. Please use it at your own risk.
 

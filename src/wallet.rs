@@ -14,7 +14,6 @@
 
 use std::collections::HashMap;
 use crate::keys;
-use tokio;
 
 /// DaemonNode struct contains all necessary and additional information about a daemon node
 pub struct DaemonNode {
@@ -97,12 +96,6 @@ impl Wallet {
             main_node: default_node,
             processes: HashMap::new()
         }
-    }
-
-    /// Starts scanning transactions from a given block height
-    #[tokio::main]
-    pub async fn start_scanning(&mut self) {
-        self.processes.insert("scan".to_string(), "running".to_string());
     }
 
     /// Opens a wallet with given mnemonic and network

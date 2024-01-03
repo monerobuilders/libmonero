@@ -31,11 +31,21 @@ pub mod mnemonics {
 }
 pub mod crypt {
     pub mod ed25519;
+    pub mod cryptonight {
+        pub mod hash;
+        pub mod slow_hash;
+        pub mod utility {
+            pub mod keccaku;
+            pub mod aesu;
+            pub mod otheru;
+        }
+    }
 }
 pub mod wallet;
-pub mod blocks;
 
 pub use utils::*;
 pub use keys::*;
 pub use mnemonics::original::wordsets;
 pub use wallet::*;
+pub use crypt::cryptonight::hash::*;
+pub use crypt::cryptonight::slow_hash::*;
