@@ -4,7 +4,7 @@ use tiny_keccak::{Hasher, Keccak};
 
 const SCRATCHPAD_SIZE: usize = 2 * 1024 * 1024; // 2 MiB
 
-pub fn cn_slow_hash(input: &[u8]) -> [u8; 10] {
+pub fn cn_slow_hash(input: &[u8]) ->  [u8; SCRATCHPAD_SIZE] {
     // CryptoNight Step 1: Initialization Of Scratchpad
 
     //     First, the input is hashed using Keccak [KECCAK] with parameters b =
@@ -47,6 +47,7 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; 10] {
     let mut blocks = [0u8; 128];
     blocks.copy_from_slice(&keccak_hash[64..192]);
 
+    // Step 1F: Loop until scratchpad is fully initialized
     for scratchpad_chunk in scratchpad.chunks_exact_mut(blocks.len()) {
         for block in blocks.chunks_exact_mut(16) {
             for key in round_keys.chunks_exact(16) {
@@ -57,8 +58,6 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; 10] {
         scratchpad_chunk.copy_from_slice(&blocks);
     }
 
-    // return first 10 bytes of scratchpad
-    let mut result = [0u8; 10];
-    result.copy_from_slice(&scratchpad[0..10]);
-    result
+    // return the scratchpad
+    scratchpad
 }
