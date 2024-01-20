@@ -20,6 +20,7 @@ fn turn_to_u64_2(u8_16: [u8; 16]) -> [u64; 2] {
     u64_2
 }
 
+// WORKS CORRECTLY
 fn xor_pair_u64_2(a: [u64; 2], b: [u64; 2]) -> [u64; 2] {
     let mut res = [0u64; 2];
     res[0] = a[0] ^ b[0];
@@ -32,10 +33,10 @@ fn turn_to_u64(u8_8: &[u8]) -> u64 {
     u64::from_le_bytes(u8_8.try_into().unwrap())
 }
 
-//    The 8byte_mul function, however, uses only the first 8 bytes of each
-//    argument, which are interpreted as unsigned 64-bit little-endian
-//    integers and multiplied together. The result is converted into 16
-//    bytes, and finally the two 8-byte halves of the result are swapped.
+// The 8byte_mul function, however, uses only the first 8 bytes of each
+// argument, which are interpreted as unsigned 64-bit little-endian
+// integers and multiplied together. The result is converted into 16
+// bytes, and finally the two 8-byte halves of the result are swapped.
 fn mul_pair_u64_2(a: [u64; 2], b: [u64; 2]) -> [u64; 2] {
     let a = u128::from(a[0]);
     let b = u128::from(b[0]);
@@ -97,8 +98,6 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; SCRATCHPAD_SIZE] {
 
     // Step 1D: Expand the AES-256 key into 10 round keys
     let round_keys = derive_key(aes_key);
-
-    // WORKS UNTIL HERE
 
     // Step 1E: Use bytes 64..191 of the Keccak hash as 8 blocks of 16 bytes each
     let mut blocks = [0u8; 128];
@@ -165,9 +164,7 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; SCRATCHPAD_SIZE] {
     let mut a: [u64; 2] = [a_1, a_2];
     let mut b: [u64; 2] = [b_1, b_2];
 
-    // First round manually
-
-    // PROBLEM IN HERE
+    // Main loop
     for _ in 0..524_288 {
         // Step 1A: First Transfer
         let addr: usize = (a[0] & 0x1F_FFF0) as usize / 16;
@@ -179,14 +176,14 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; SCRATCHPAD_SIZE] {
         let man = xor_pair_u64_2(sp_u64_2[addr], tmp);
         sp_u64_2[addr] = man;
 
-        // Works until here
-
         // Step 1C: Second Transfer
         let addr: usize = (b[0] & 0x1F_FFF0) as usize / 16;
         let tmp = add_pair_u64_2(a, mul_pair_u64_2(b, sp_u64_2[addr]));
         a = xor_pair_u64_2(sp_u64_2[addr], tmp);
         sp_u64_2[addr] = tmp;
     }
+
+    // Works until here
 
     println!("1st: {:?}, {:?}", sp_u64_2[0][0], sp_u64_2[0][1]);
     println!("2nd: {:?}, {:?}", sp_u64_2[1][0], sp_u64_2[1][1]);
