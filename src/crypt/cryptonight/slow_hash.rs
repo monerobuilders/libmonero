@@ -1,6 +1,10 @@
+use blake2::Blake2s256;
+use groestl::{Groestl256, Digest as gd};
+use jh::Jh256;
+use sha3::{Keccak256Full, Digest};
+use skein::{Skein256, consts::U32};
 use super::aesu::derive_key;
-use crate::crypt::cryptonight::aesu::aes_round;
-use sha3::{Digest, Keccak256Full};
+use crate::crypt::cryptonight::aesu::{aes_round, xor};
 
 const SCRATCHPAD_SIZE: usize = 2 * 1024 * 1024; // 2 MiB
 
@@ -60,7 +64,7 @@ fn add_pair_u64_2(a: [u64; 2], b: [u64; 2]) -> [u64; 2] {
     res
 }
 
-pub fn cn_slow_hash(input: &[u8]) -> [u8; SCRATCHPAD_SIZE] {
+pub fn cn_slow_hash(input: &[u8]) -> String {
     // CryptoNight Step 1: Initialization Of Scratchpad
 
     //     First, the input is hashed using Keccak [KECCAK] with parameters b =
@@ -114,7 +118,7 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; SCRATCHPAD_SIZE] {
         scratchpad_chunk.copy_from_slice(&blocks);
     }
 
-    // Cryptonigth Step 2: Memory-hard Loop
+    // Cryptonight Step 2: Memory-hard Loop
 
     // Prior to the main loop, bytes 0..31 and 32..63 of the Keccak state
     // are XORed, and the resulting 32 bytes are used to initialize
@@ -183,28 +187,107 @@ pub fn cn_slow_hash(input: &[u8]) -> [u8; SCRATCHPAD_SIZE] {
         sp_u64_2[addr] = tmp;
     }
 
+    // Turn [[u64; 2]; 131072] into [u8; SCRATCHPAD_SIZE]
+    for (i, sp_u64_2_chunk) in sp_u64_2.iter().enumerate() {
+        let u8_slice = unsafe {
+            std::slice::from_raw_parts(sp_u64_2_chunk.as_ptr() as *const u8, 16)
+        };
+        scratchpad[i * 16..(i + 1) * 16].copy_from_slice(u8_slice);
+    }
+
     // Works until here
 
-    println!("1st: {:?}, {:?}", sp_u64_2[0][0], sp_u64_2[0][1]);
-    println!("2nd: {:?}, {:?}", sp_u64_2[1][0], sp_u64_2[1][1]);
-    println!("3rd: {:?}, {:?}", sp_u64_2[2][0], sp_u64_2[2][1]);
-    println!("4th: {:?}, {:?}", sp_u64_2[3][0], sp_u64_2[3][1]);
-    println!(
-        "last-4: {:?}, {:?}",
-        sp_u64_2[131068][0], sp_u64_2[131068][1]
-    );
-    println!(
-        "last-3: {:?}, {:?}",
-        sp_u64_2[131069][0], sp_u64_2[131069][1]
-    );
-    println!(
-        "last-2: {:?}, {:?}",
-        sp_u64_2[131070][0], sp_u64_2[131070][1]
-    );
-    println!(
-        "last-1: {:?}, {:?}",
-        sp_u64_2[131071][0], sp_u64_2[131071][1]
-    );
+    // Cryptonight Step 3: Result Calculation
 
-    return scratchpad;
+    // After the memory-hard part, bytes 32..63 from the Keccak state are
+    // expanded into 10 AES round keys in the same manner as in the first
+    // part.
+
+    // Bytes 64..191 are extracted from the Keccak state and XORed with the
+    // first 128 bytes of the scratchpad. Then the result is encrypted in
+    // the same manner as in the first part, but using the new keys. The
+    // result is XORed with the second 128 bytes from the scratchpad,
+    // encrypted again, and so on. 
+
+    // After XORing with the last 128 bytes of the scratchpad, the result is
+    // encrypted the last time, and then the bytes 64..191 in the Keccak
+    // state are replaced with the result. Then, the Keccak state is passed
+    // through Keccak-f (the Keccak permutation) with b = 1600. 
+
+    // Then, the 2 low-order bits of the first byte of the state are used to
+    // select a hash function: 0=BLAKE-256 [BLAKE], 1=Groestl-256 [GROESTL],
+    // 2=JH-256 [JH], and 3=Skein-256 [SKEIN]. The chosen hash function is
+    // then applied to the Keccak state, and the resulting hash is the
+    // output of CryptoNight.
+
+    // Step 3A: Encrypt the scratchpad with the new keys
+    let round_keys_buffer = derive_key(&keccak_hash[32..64]);
+    let final_block = &mut keccak_hash[64..192];
+    for scratchpad_chunk in scratchpad.chunks_exact(128) {
+        xor(final_block, scratchpad_chunk);
+        for block in final_block.chunks_exact_mut(16) {
+            for key in round_keys_buffer.chunks_exact(16) {
+                aes_round(block, key);
+            }
+        }
+    }
+
+    // Step 3B: Turn keccak_hash to [u64; 25] and pass it through Keccak-f, then turn it back to [u8; 200]
+    let mut keccak_state = [0u64; 25];
+    for (index, chunk) in keccak_hash.chunks_exact(8).enumerate() {
+        keccak_state[index] = u64::from_le_bytes(chunk.try_into().unwrap());
+    }
+    tiny_keccak::keccakf(&mut keccak_state);
+    for (index, chunk) in keccak_state.iter().enumerate() {
+        keccak_hash[index * 8..(index + 1) * 8].copy_from_slice(&chunk.to_le_bytes());
+    }
+
+    // Step 3C: Use the first byte of the Keccak state to select a hash function
+    let hash_function = keccak_hash[0] & 3;
+    let final_byte = match hash_function {
+        0 => blake256_hash(keccak_hash),
+        1 => groestl256_hash(keccak_hash),
+        2 => jh256_hash(keccak_hash),
+        3 => skein256_hash(keccak_hash),
+        x => unreachable!("Hash function {} not implemented", x),
+    };
+    
+    // Format as hex then print
+    let mut final_hex = String::new();
+    for byte in final_byte.iter() {
+        final_hex.push_str(&format!("{:02x}", byte));
+    }
+    final_hex
+}
+
+fn blake256_hash(input: [u8; 200]) -> [u8; 32] {
+    let mut hasher = Blake2s256::new();
+    hasher.update(input);
+    let mut hash = [0u8; 32];
+    hash.copy_from_slice(&hasher.finalize());
+    hash
+}
+
+fn groestl256_hash(input: [u8; 200]) -> [u8; 32] {
+    let mut hasher = Groestl256::default();
+    hasher.input(input);
+    let mut hash = [0u8; 32];
+    hash.copy_from_slice(&hasher.result());
+    hash
+}
+
+fn jh256_hash(input: [u8; 200]) -> [u8; 32] {
+    let mut hasher = Jh256::new();
+    hasher.update(input);
+    let mut hash = [0u8; 32];
+    hash.copy_from_slice(&hasher.finalize());
+    hash
+}
+
+fn skein256_hash(input: [u8; 200]) -> [u8; 32] {
+    let mut hasher = Skein256::<U32>::new();
+    sha3::Digest::update(&mut hasher, input);
+    let mut hash = [0u8; 32];
+    hash.copy_from_slice(&hasher.finalize());
+    hash
 }
