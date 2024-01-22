@@ -32,7 +32,7 @@ tiny-keccak = { version = "2.0.2", features=["keccak"] }
 keccak = "0.1.4"
 
 # Hashes needed for implementing the final step
-groestl = "0.8.0"
+groestl = "0.10.1"
 skein = "0.1.0"
 blake2 = "0.10.6"
 jh = "0.1.0"
