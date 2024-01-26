@@ -70,7 +70,7 @@ pub(crate) fn blake256_hash(input: [u8; 200]) -> [u8; 32] {
     let mut hasher = Blake256::new();
     hasher.update(input);
     let mut hash = [0u8; 32];
-    hash.copy_from_slice(&hasher.finalize().as_slice());
+    hash.copy_from_slice(hasher.finalize().as_slice());
     hash
 }
 
