@@ -191,7 +191,8 @@ pub fn cn_slow_hash(input: &[u8]) -> String {
     }
 
     // Step 3C: Use the first byte of the Keccak state to select a hash function
-    let hash_function = keccak_hash[0] & 3;
+    let hash_function = keccak_hash[0] & 0x03;
+    println!("hash_function: {:?}", hash_function);
     let final_byte = match hash_function {
         0 => blake256_hash(keccak_hash),
         1 => groestl256_hash(keccak_hash),

@@ -8,7 +8,8 @@
  *
  */
 
-use blake2::Blake2s256;
+use blake_hash::{Blake256, Digest as bhd};
+use digest::KeyInit;
 use groestl::Groestl256;
 use jh::Jh256;
 use sha3::Digest;
@@ -67,10 +68,10 @@ pub(crate) fn mul_pair_u64_2(a: [u64; 2], b: [u64; 2]) -> [u64; 2] {
 // HASHES
 
 pub(crate) fn blake256_hash(input: [u8; 200]) -> [u8; 32] {
-    let mut hasher = Blake2s256::new();
+    let mut hasher = Blake256::new();
     hasher.update(input);
     let mut hash = [0u8; 32];
-    hash.copy_from_slice(&hasher.finalize());
+    hash.copy_from_slice(&hasher.finalize().as_slice());
     hash
 }
 
