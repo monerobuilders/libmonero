@@ -9,7 +9,6 @@
  */
 
 use blake_hash::{Blake256, Digest as bhd};
-use digest::KeyInit;
 use groestl::Groestl256;
 use jh::Jh256;
 use sha3::Digest;
