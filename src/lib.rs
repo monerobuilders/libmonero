@@ -8,9 +8,28 @@
  *
  */
 
+//! Powerful, batteries-included Monero library. It is mainly function-oriented, but some structs are also included.
+//! 
+//! You can get started by adding the "libmonero" crate in your project: \
+//! `cargo add libmonero`
+//! 
+//! ## Functions
+//! 
+//! - Utils
+//!     - [is_valid_addr(address: &str) -> bool](utils/fn.is_valid_addr.html)
+//! - Keys
+//!     - [generate_seed(language: &str, seed_type: &str) -> Vec<String>](keys/fn.generate_seed.html)
+//!     - [derive_hex_seed(mnemonic_seed: Vec<String>) -> String](keys/fn.derive_hex_seed.html)
+//!     - [derive_priv_keys(hex_seed: String) -> Vec<String>](keys/fn.derive_priv_keys.html)
+//!     - [derive_priv_vk_from_priv_sk(private_spend_key: String) -> String](keys/fn.derive_priv_vk_from_priv_sk.html)
+//!     - [derive_pub_key(private_key: String) -> String](keys/fn.derive_pub_key.html)
+//!     - [derive_address(public_spend_key: String, public_view_key: String, network: i8) -> String](keys/fn.derive_address.html)
+
+/// Utility functions like address validation
 pub mod utils;
+/// All functions related to keys
 pub mod keys;
-pub mod mnemonics {
+pub(crate) mod mnemonics {
     pub mod original {
         pub mod wordsets;
         pub mod languages {
@@ -29,18 +48,20 @@ pub mod mnemonics {
         }
     }
 }
+/// Cryptographic functions
 pub mod crypt {
-    pub mod ed25519;
+    pub(crate) mod ed25519;
+    /// Cryptonight functions
     pub mod cryptonight {
+        /// Cryptonight's slow hash related functions
         pub mod slow_hash;
-        pub mod aesu;
-        pub mod otheru;
+        pub(crate) mod aesu;
+        pub(crate) mod otheru;
     }
 }
-pub mod wallet;
 
-pub use utils::*;
-pub use keys::*;
-pub use mnemonics::original::wordsets;
-pub use wallet::*;
-pub use crypt::cryptonight::slow_hash::*;
+// Will be added in the future
+// pub mod wallet;
+// pub use wallet::*;
+pub use crypt::cryptonight::slow_hash::cn_slow_hash;
+use mnemonics::original::wordsets;

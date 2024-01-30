@@ -10,7 +10,7 @@
 
 //! # Keys
 //!
-//! This module is for everything related to keys, such as generating seeds, deriving keys from seeds, deriving public keys from private keys, and deriving addresses from public keys.
+//! This module is for everything related to keys, such as generating seeds, deriving keys from seeds, deriving public keys from private keys, and deriving addresses from public keys etc.
 
 use crate::crypt::ed25519::sc_reduce32;
 use crate::wordsets::{WordsetOriginal, WORDSETSORIGINAL};
@@ -94,15 +94,38 @@ fn generate_mymonero_seed(language: &str) -> Vec<&str> {
     seed
 }
 
-/// Creates a cryptographically secure seed of given type and language
+/// Generates a cryptographically secure mnemonic phrase for given language and seed type
+/// 
+/// Available seed types:
+/// - `original` : (25-word)
+///     - `en` (English)
+///     - `eo` (Esperanto)
+///     - `fr` (French)
+///     - `it` (Italian)
+///     - `jp` (Japanese) (Works but not recommended)
+///     - `lj` (Lojban)
+///     - `pt` (Portuguese)
+///     - `ru` (Russian)
+/// - `mymonero` : (13-word, MyMonero wallet type)
+///     - `en`, `eo`, `fr`, `it`, `jp`, `lj`, `pt`, `ru` (same as original)
+/// - `polyseed` : (TO BE IMPLEMENTED)
+/// > DISCLAIMER: polyseed is not implemented yet
+/// 
+/// Example:
+/// ```
+/// use libmonero::keys::generate_seed;
+/// 
+/// let mnemonic: Vec<String> = generate_seed("en", "original");
+/// // Not equal to the example below because the seed is generated randomly, but the seed is valid
+/// assert_ne!(mnemonic, vec!["tissue", "raking", "haunted", "huts", "afraid", "volcano", "howls", "liar", "egotistic", "befit", "rounded", "older", "bluntly", "imbalance", "pivot", "exotic", "tuxedo", "amaze", "mostly", "lukewarm", "macro", "vocal", "hounded", "biplane", "rounded"].iter().map(|&s| s.to_string()).collect::<Vec<String>>());
+/// ```
 pub fn generate_seed(language: &str, seed_type: &str) -> Vec<String> {
-    let seed;
-    match seed_type {
-        "original" => seed = generate_original_seed(language),
-        "mymonero" => seed = generate_mymonero_seed(language),
-        "polyseed" => panic!("Polyseed not yet implemented yet"),
+    let seed = match seed_type {
+        "original" => generate_original_seed(language),
+        "mymonero" => generate_mymonero_seed(language),
+        "polyseed" => panic!("Polyseed not implemented yet"),
         _ => panic!("Invalid seed type"),
-    }
+    };
     let mut seed_string: Vec<String> = Vec::new();
     for word in seed {
         seed_string.push(word.to_string());
@@ -115,7 +138,16 @@ fn swap_endian_4_byte(s: &str) -> String {
     format!("{}{}{}{}", &s[6..8], &s[4..6], &s[2..4], &s[0..2])
 }
 
-/// Derives hex seed from given mnemonic seed
+/// Derives hexadecimal seed from the given mnemonic seed
+/// 
+/// Example:
+/// ```
+/// use libmonero::keys::derive_hex_seed;
+/// 
+/// let mnemonic: Vec<String> = vec!["tissue", "raking", "haunted", "huts", "afraid", "volcano", "howls", "liar", "egotistic", "befit", "rounded", "older", "bluntly", "imbalance", "pivot", "exotic", "tuxedo", "amaze", "mostly", "lukewarm", "macro", "vocal", "hounded", "biplane", "rounded"].iter().map(|s| s.to_string()).collect();
+/// let hex_seed: String = derive_hex_seed(mnemonic);
+/// assert_eq!(hex_seed, "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8".to_string());
+/// ```
 pub fn derive_hex_seed(mut mnemonic_seed: Vec<String>) -> String {
     // Find the wordset for the given seed
     let mut the_wordset = &WordsetOriginal {
@@ -210,8 +242,8 @@ fn derive_original_priv_keys(hex_seed: String) -> Vec<String> {
     let mut priv_spend_key = String::new();
     for i in (0..hex_bytes_array.len()).step_by(32) {
         let mut priv_key = String::new();
-        for j in i..i + 32 {
-            priv_key.push_str(&format!("{:02x}", hex_bytes_array[j]));
+        for byte in hex_bytes_array.iter().skip(i).take(32) {
+            priv_key.push_str(&format!("{:02x}", byte));
         }
         priv_spend_key.push_str(&priv_key);
     }
@@ -225,8 +257,8 @@ fn derive_original_priv_keys(hex_seed: String) -> Vec<String> {
     let mut priv_view_key = String::new();
     for i in (0..priv_view_key_array.len()).step_by(32) {
         let mut priv_key = String::new();
-        for j in i..i + 32 {
-            priv_key.push_str(&format!("{:02x}", priv_view_key_array[j]));
+        for byte in priv_view_key_array.iter().skip(i).take(32) {
+            priv_key.push_str(&format!("{:02x}", byte));
         }
         priv_view_key.push_str(&priv_key);
     }
@@ -245,8 +277,8 @@ fn derive_mymonero_priv_keys(hex_seed: String) -> Vec<String> {
     let mut priv_spend_key = String::new();
     for i in (0..priv_spend_key_array.len()).step_by(32) {
         let mut priv_key = String::new();
-        for j in i..i + 32 {
-            priv_key.push_str(&format!("{:02x}", priv_spend_key_array[j]));
+        for item in priv_spend_key_array.iter().skip(i).take(32) {
+            priv_key.push_str(&format!("{:02x}", item));
         }
         priv_spend_key.push_str(&priv_key);
     }
@@ -262,8 +294,8 @@ fn derive_mymonero_priv_keys(hex_seed: String) -> Vec<String> {
     let mut priv_view_key = String::new();
     for i in (0..priv_view_key_array.len()).step_by(32) {
         let mut priv_key = String::new();
-        for j in i..i + 32 {
-            priv_key.push_str(&format!("{:02x}", priv_view_key_array[j]));
+        for item in priv_view_key_array.iter().skip(i).take(32) {
+            priv_key.push_str(&format!("{:02x}", item));
         }
         priv_view_key.push_str(&priv_key);
     }
@@ -271,7 +303,18 @@ fn derive_mymonero_priv_keys(hex_seed: String) -> Vec<String> {
     vec![priv_spend_key, priv_view_key]
 }
 
-/// Derives private spend and view keys from given hex seed
+/// Derives private keys from given hex seed
+/// 
+/// Vector's first element is private spend key, second element is private view key
+/// 
+/// Example:
+/// ```
+/// use libmonero::keys::derive_priv_keys;
+/// 
+/// let hex_seed: String = "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8".to_string();
+/// let priv_keys: Vec<String> = derive_priv_keys(hex_seed);
+/// assert_eq!(priv_keys, vec!["c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08", "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"].iter().map(|&s| s.to_string()).collect::<Vec<String>>());
+/// ```
 pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
     match hex_seed.len() {
         32 => derive_mymonero_priv_keys(hex_seed),
@@ -280,7 +323,16 @@ pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
     }
 }
 
-/// Derives private view key from private spend key
+/// Derives private view key from given private spend key
+/// 
+/// Example:
+/// ```
+/// use libmonero::keys::derive_priv_vk_from_priv_sk;
+/// 
+/// let private_spend_key: String = "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08".to_string();
+/// let private_view_key: String = derive_priv_vk_from_priv_sk(private_spend_key);
+/// assert_eq!(private_view_key, "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908".to_string());
+/// ```
 pub fn derive_priv_vk_from_priv_sk(private_spend_key: String) -> String {
     // Turn private spend key into bytes and pass through Keccak256 function
     let priv_spend_key_bytes = hex::decode(private_spend_key.clone()).unwrap();
@@ -292,8 +344,8 @@ pub fn derive_priv_vk_from_priv_sk(private_spend_key: String) -> String {
     let mut priv_view_key = String::new();
     for i in (0..priv_view_key_array.len()).step_by(32) {
         let mut priv_key = String::new();
-        for j in i..i + 32 {
-            priv_key.push_str(&format!("{:02x}", priv_view_key_array[j]));
+        for item in priv_view_key_array.iter().skip(i).take(32) {
+            priv_key.push_str(&format!("{:02x}", item));
         }
         priv_view_key.push_str(&priv_key);
     }
@@ -306,7 +358,16 @@ fn ge_scalar_mult_base(scalar: &Scalar) -> EdwardsPoint {
     ED25519_BASEPOINT_TABLE.mul(scalar as &Scalar)
 }
 
-/// Derives public key from given private key, can be either spend or view key
+/// Derives public key from given private key (spend or view)
+/// 
+/// Example:
+/// ```
+/// use libmonero::keys::derive_pub_key;
+/// 
+/// let private_spend_key: String = "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08".to_string();
+/// let public_spend_key: String = derive_pub_key(private_spend_key);
+/// assert_eq!(public_spend_key, "e78d891dd2be407f24e6470caad956e1b746ae0b41cd8252f96684090bc05d95".to_string());
+/// ```
 pub fn derive_pub_key(private_key: String) -> String {
     // Turn private key into bytes
     let private_key_bytes = hex::decode(private_key.clone()).unwrap();
@@ -320,8 +381,8 @@ pub fn derive_pub_key(private_key: String) -> String {
     let mut public_key = String::new();
     for i in (0..public_key_bytes.len()).step_by(32) {
         let mut pub_key = String::new();
-        for j in i..i + 32 {
-            pub_key.push_str(&format!("{:02x}", public_key_bytes[j]));
+        for item in public_key_bytes.iter().skip(i).take(32) {
+            pub_key.push_str(&format!("{:02x}", item));
         }
         public_key.push_str(&pub_key);
     }
@@ -329,7 +390,21 @@ pub fn derive_pub_key(private_key: String) -> String {
     public_key
 }
 
-/// Derives public address from given public spend and view keys and network
+/// Derives main public address from given public spend key, public view key and network
+/// 
+/// Networks:
+/// - `0` : Monero Mainnet
+/// - `1` : Monero Testnet
+/// 
+/// Example:
+/// ```
+/// use libmonero::keys::derive_address;
+/// 
+/// let public_spend_key: String = "e78d891dd2be407f24e6470caad956e1b746ae0b41cd8252f96684090bc05d95".to_string();
+/// let public_view_key: String = "157d278aa3aee4e11c5a8243a43a78527a2691009562b8c18654975f1347cb47".to_string();
+/// let public_address: String = derive_address(public_spend_key, public_view_key, 0);
+/// assert_eq!(public_address, "4AQ3jTJg91yNGTXjo9iWr1ekjBGJ5mM6HEsxKqoKddHnRwJTVJYnyLXeerff6iTys5Eo8dyG87tfqZNS5CcSd7U694YiR8J".to_string());
+/// ```
 pub fn derive_address(public_spend_key: String, public_view_key: String, network: u8) -> String {
     let network_byte = match network {
         0 => vec![0x12], // Monero mainnet

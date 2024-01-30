@@ -67,7 +67,6 @@ pub struct Wallet {
     pub sub_adresses: Vec<String>,
     pub transactions: Vec<Transaction>,
     pub main_node: DaemonNode,
-    /// Record of processes, used internally, don't change manually unless specified
     pub processes: HashMap<String, String>
 }
 

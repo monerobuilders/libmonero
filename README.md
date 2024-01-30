@@ -11,7 +11,7 @@
 
 > DISCLAIMER: This library is still in early development and doesn't have a stable version yet. It is not ready for production use and not cryptographically audited. We are working hard to make it as secure as possible. Please use it at your own risk.
 
-libmonero is a library for the Monero cryptocurrency written in Rust. It is designed to be fast, safe and easy to use.
+libmonero is a powerful, batteries-included library for the Monero cryptocurrency written in Rust. It is designed to be fast, safe and easy to use.
 
 [Why another library?](#why-another-library)
 
@@ -28,7 +28,18 @@ And many more features... ([Roadmap](#roadmap))
 Add the library to your project and use the functions: \
 ```cargo add libmonero```
 
-For more details, please take a look at [docs](docs/start.md)
+For more details, please take a look at [docs](https://docs.rs/libmonero).
+
+## Sponsoring
+
+You can sponsor this project for 20$/month. If you sponsor this project, you will get the following benefits:
+
+- Mention in the README.md (with your logo and link to your website if you want)
+- Request features or bugfixes
+- Priority support
+- Special role in the matrix room 
+
+If you want to sponsor this project, please contact us at the matrix room: [#monume:matrix.org](https://matrix.to/#/#monume:matrix.org)
 
 ## Licensing
 

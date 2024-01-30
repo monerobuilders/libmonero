@@ -14,8 +14,18 @@ use crate::crypt::cryptonight::aesu::{aes_round, xor};
 
 const SCRATCHPAD_SIZE: usize = 2 * 1024 * 1024; // 2 MiB
 
-/// Main CryptoNight function defined in: https://web.archive.org/web/20190911221902/https://cryptonote.org/cns/cns008.txt
-/// It is used in previous block hash calculation and in PoW calculation
+/// Main CryptoNight function defined in: <https://web.archive.org/web/20190911221902/https://cryptonote.org/cns/cns008.txt>
+/// 
+/// Even though it's actually implemented in Rust for [Cuprate](https://github.com/Cuprate/cuprate), anyone can use it.
+/// 
+/// Example:
+/// ```
+/// use libmonero::crypt::cryptonight::slow_hash::cn_slow_hash;
+/// 
+/// let input: &str = "This is a test";
+/// let output: String = cn_slow_hash(input.as_bytes());
+/// assert_eq!(output, "a084f01d1437a09c6985401b60d43554ae105802c5f5d8a9b3253649c0be6605".to_string());
+/// ```
 pub fn cn_slow_hash(input: &[u8]) -> String {
     // CryptoNight Step 1: Initialization Of Scratchpad
 
@@ -192,7 +202,6 @@ pub fn cn_slow_hash(input: &[u8]) -> String {
 
     // Step 3C: Use the first byte of the Keccak state to select a hash function
     let hash_function = keccak_hash[0] & 0x03;
-    println!("hash_function: {:?}", hash_function);
     let final_byte = match hash_function {
         0 => blake256_hash(keccak_hash),
         1 => groestl256_hash(keccak_hash),

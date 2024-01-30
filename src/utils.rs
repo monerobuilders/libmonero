@@ -10,12 +10,23 @@
 
 //! # Utils
 //! 
-//! This module contains utility functions.
+//! This module contains utility functions like address validation etc.
 
 use regex::Regex;
 
-/// Returns true if given address is a valid Monero address
+/// Checks if the given address is valid, returns true if it is, false otherwise
+/// 
+/// Example:
+/// ```
+/// use libmonero::utils::is_valid_addr;
+/// 
+/// let result: bool = is_valid_addr("42XUaeqehJTfM1wpW5prsJiQYobDUQG5FfzVe47sYa8LZG3wPwybySuC6kwADuLJJDg86k8yfcp6h963Ck8NEfWdAjfJyVB");
+/// assert_eq!(result, true);
+/// 
+/// let result_invalid: bool = is_valid_addr("12342XUaeqehJTfM1wpW5prsJiQYobDUQG5FfzVe47sYa8LZG3wPwybySuC6kwADuLJJDg86k8yfcp6h963Ck8NEfWdAjfJyVB");
+/// assert_eq!(result_invalid, false);
+/// ```
 pub fn is_valid_addr(address: &str) -> bool {
-    let r = Regex::new(r"^(4|8)[0-9a-zA-Z]{95}$").unwrap();
+    let r = Regex::new(r"^[48][0-9AB][1-9A-HJ-NP-Za-km-z]{93}$").unwrap();
     r.is_match(address)
 }

@@ -127,21 +127,3 @@ fn shift_rows(block: &mut [u8]) {
     }
     block[3] = tmp;
 }
-
-pub fn aes_round16(blocks: &[u8; 16], round_keys: &[u8; 16]) -> [u8; 16] {
-    let mut block = *blocks;
-    let mut round_key = *round_keys;
-
-    aes_round(&mut block, &round_key);
-    round_key.rotate_left(4);
-
-    aes_round(&mut block, &round_key);
-    round_key.rotate_left(4);
-
-    aes_round(&mut block, &round_key);
-    round_key.rotate_left(4);
-
-    aes_round(&mut block, &round_key);
-
-    block
-}

@@ -10,6 +10,7 @@ repository = "https://github.com/monumexyz/libmonero"
 readme = "README.md"
 keywords = ["monero", "monero-library"]
 categories = ["monero", "monero-library"]
+exclude = ["main.rs"]
 
 [dependencies]
 base58-monero = "2.0.0"
