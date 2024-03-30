@@ -15,46 +15,6 @@
 use std::collections::HashMap;
 use crate::keys;
 
-/// DaemonNode struct contains all necessary and additional information about a daemon node
-pub struct DaemonNode {
-    pub url: String,
-    pub port: u16,
-    pub tls: bool,
-}
-
-/// DaemonNode functions etc.
-impl DaemonNode {
-    /// Returns Stack Wallet's default node
-    pub fn stack_wallet_default() -> DaemonNode {
-        DaemonNode {
-            url: "monero.stackwallet.com".to_string(),
-            port: 18081,
-            tls: false
-        }
-    }
-
-    /// Returns Cake Wallet's default node
-    pub fn cake_wallet_default() -> DaemonNode {
-        DaemonNode {
-            url: "xmr-node.cakewallet.com".to_string(),
-            port: 18081,
-            tls: false
-        }
-    }
-}
-
-/// Transactions struct contains all the information about a single transaction
-pub struct Transaction {
-    pub sender: String,
-    pub receiver: String,
-    pub amount: u64,
-    pub timestamp: u64,
-    pub block_height: u64,
-    pub tx_hash: String,
-    pub tx_fee: u64,
-    pub additional_data: HashMap<String, String>
-}
-
 /// Wallet struct contains all the information about a wallet
 pub struct Wallet {
     pub mnemonic: Vec<String>,

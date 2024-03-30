@@ -14,13 +14,13 @@ use crate::crypt::cryptonight::aesu::{aes_round, xor};
 
 const SCRATCHPAD_SIZE: usize = 2 * 1024 * 1024; // 2 MiB
 
-/// Main CryptoNight function defined in: <https://web.archive.org/web/20190911221902/https://cryptonote.org/cns/cns008.txt>
+/// EXPERIMENTAL! Main CryptoNight function defined in: <https://web.archive.org/web/20190911221902/https://cryptonote.org/cns/cns008.txt>
 /// 
 /// Even though it's actually implemented in Rust for [Cuprate](https://github.com/Cuprate/cuprate), anyone can use it.
 /// 
 /// Example:
 /// ```
-/// use libmonero::crypt::cryptonight::slow_hash::cn_slow_hash;
+/// use libmonero::crypt::cryptonight::cn_slow_hash;
 /// 
 /// let input: &str = "This is a test";
 /// let output: String = cn_slow_hash(input.as_bytes());

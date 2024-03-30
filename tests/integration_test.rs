@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use libmonero::keys::{derive_address, derive_hex_seed, derive_priv_keys, derive_pub_key, generate_seed};
-    use libmonero::crypt::cryptonight::slow_hash::cn_slow_hash;
+    use libmonero::crypt::cryptonight::cn_slow_hash;
 
     #[test]
     fn seed_generation() {

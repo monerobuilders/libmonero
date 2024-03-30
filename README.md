@@ -1,7 +1,10 @@
-<div style="border-radius: 100px; overflow: hidden">
-    <img src="./assets/libmonero-logo.jpg"/>
-</div>
-
+```
+ _ _ _
+| (_) |__  _ __ ___   ___  _ __   ___ _ __ ___
+| | | '_ \| '_ ` _ \ / _ \| '_ \ / _ \ '__/ _ \
+| | | |_) | | | | | | (_) | | | |  __/ | | (_) |
+|_|_|_.__/|_| |_| |_|\___/|_| |_|\___|_|  \___/
+```
 ---
 [![Crates.io](https://img.shields.io/crates/v/libmonero.svg)](https://crates.io/crates/libmonero)
 [![Docs](https://docs.rs/libmonero/badge.svg)](https://docs.rs/libmonero)
@@ -20,6 +23,7 @@ libmonero is a powerful, batteries-included library for the Monero cryptocurrenc
 - Original (25-word) and MyMonero (13-word) seed support
 - Many language support for seeds: en, eo, fr, it, ja, pt, ru, lj...
 - Hexadecimal seed, private spend and view keys, address derivation
+- RPC for getting data from the Monero network
 
 And many more features... ([Roadmap](#roadmap))
  
@@ -29,17 +33,14 @@ Add the library to your project and use the functions: \
 ```cargo add libmonero```
 
 For more details, please take a look at [docs](https://docs.rs/libmonero).
+If you have any questions, you can ask either at the [discussions](https://github.com/monumexyz/libmonero/discussions) or [matrix room](https://matrix.to/#/#monume:matrix.org).
 
-## Sponsoring
+## Supporting
 
-You can sponsor this project for 20$/month. If you sponsor this project, you will get the following benefits:
-
-- Mention in the README.md (with your logo and link to your website if you want)
-- Request features or bugfixes
-- Priority support
-- Special role in the matrix room 
-
-If you want to sponsor this project, please contact us at the matrix room: [#monume:matrix.org](https://matrix.to/#/#monume:matrix.org)
+As you may notice, we don't make any money from this project. We are working on this project for the Monero community and for the love of open-source. If you want to support us, you can donate to the following Monero address:
+```
+48SK3AeqELVKwsyKkSvxw9YkY8YU5eBHTZTQS2eWZb9yNtb7FYAJqxnhY41x5uGb2UJew8pBek4Cdg41CaA3CHpCCsGGBjF
+```
 
 ## Licensing
 
@@ -57,7 +58,7 @@ This project is licensed under the MIT License. Please take a look at [LICENSE.m
 
 Almost every Monero 'library' on the net is either a wrapper or a port of the official software and it's RPC. They just make interface for you to communicate with the 'real software', where all things happen. This is not the case with libmonero¹. You don't need any of the official code, which is written in C++ and is very hard to understand (some people even say wallet2 is 'hell' :D). This library is designed to be a fast, safe, and full-featured library, with support for all the features of the Monero blockchain and ecosystem.
 
-¹: This library is written from scratch in Rust and is designed to be easy to use and understand with no need for any other software (other than Monero Daemon for blockchain data etc.). We aim for this library to be usable even for embedded apps. That's why we are calling it 'batteries-included'.
+¹: This library is written from scratch in Rust and is designed to be easy to use and understand with no need for any other software (other than Monero Daemon for blockchain data etc., NO WALLET RPC). We aim for this library to be usable even for embedded apps. That's why we are calling it 'batteries-included'.
 
 Building this library from scratch is a huge task. We are working hard to make it as good as possible. If you want to help us, please consider contributing to this project. We are looking for people who can help us with the development, testing, and documentation. If you are interested and need any help about it, please contact community at the matrix room: [#monume:matrix.org](https://matrix.to/#/#monume:matrix.org)
 

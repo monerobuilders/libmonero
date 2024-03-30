@@ -50,9 +50,7 @@ def add_text_to_files(folder_path, text, ignored_extensions=[]):
                             file.write(text + '\n' + ''.join(lines))
 
 def main():
-    print("Starting copyright script")
     add_text_to_files(path, header, ignore)
-    print("Finished adding copyright headers")
-    
+        
 if __name__ == "__main__":
     main()
