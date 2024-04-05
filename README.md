@@ -33,7 +33,7 @@ Add the library to your project and use the functions: \
 ```cargo add libmonero```
 
 For more details, please take a look at [docs](https://docs.rs/libmonero).
-If you have any questions, you can ask either at the [discussions](https://github.com/monumexyz/libmonero/discussions) or [matrix room](https://matrix.to/#/#monume:matrix.org).
+If you have any questions, you can ask either at the [discussions](https://github.com/monumexyz/libmonero/discussions) or [matrix channel](https://matrix.to/#/#monume:matrix.org).
 
 ## Supporting
 

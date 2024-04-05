@@ -2,6 +2,7 @@ use crate::mnemonics::polyseed::wordsets::WordsetPolyseed;
 
 pub(crate) const ENGLISHPOLYSEED: WordsetPolyseed = WordsetPolyseed {
     name: "en",
+    prefix_length: 4,
     words: [
         "abandon",
         "ability",

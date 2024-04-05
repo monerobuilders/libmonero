@@ -32,7 +32,7 @@
 //!         - [`get_transaction_from_hash(node: DaemonNode, hash: &str) -> RawTx`](blocks/fn.get_transaction_from_hash.html)
 //! - Crypt
 //!     - [`cryptonight`](crypt/cryptonight/index.html)
-//!         - [`cn_slow_hash(input: &[u8]) -> String`](crypt/cryptonight/fn.cn_slow_hash.html) - EXPERIMENTAL!
+//!         - [`cn_slow_hash_original(input: &[u8]) -> String`](crypt/cryptonight/fn.cn_slow_hash_original.html) - EXPERIMENTAL!
 //! - Keys
 //!     - [`derive_address(public_spend_key: String, public_view_key: String, network: i8) -> String`](keys/fn.derive_address.html)
 //!     - [`derive_hex_seed(mnemonic_seed: Vec<String>) -> String`](keys/fn.derive_hex_seed.html)
@@ -41,6 +41,7 @@
 //!     - [`derive_pub_key(private_key: String) -> String`](keys/fn.derive_pub_key.html)
 //!     - [`generate_seed(language: &str, seed_type: &str) -> Vec<String>`](keys/fn.generate_seed.html)
 //! - Utils
+//! 
 //!     - [`is_valid_addr(address: &str) -> bool`](utils/fn.is_valid_addr.html)
 
 

@@ -16,39 +16,37 @@ const SCRATCHPAD_SIZE: usize = 2 * 1024 * 1024; // 2 MiB
 
 /// EXPERIMENTAL! Main CryptoNight function defined in: <https://web.archive.org/web/20190911221902/https://cryptonote.org/cns/cns008.txt>
 /// 
-/// Even though it's actually implemented in Rust for [Cuprate](https://github.com/Cuprate/cuprate), anyone can use it.
-/// 
 /// Example:
 /// ```
-/// use libmonero::crypt::cryptonight::cn_slow_hash;
+/// use libmonero::crypt::cryptonight::cn_slow_hash_original;
 /// 
 /// let input: &str = "This is a test";
-/// let output: String = cn_slow_hash(input.as_bytes());
+/// let output: String = cn_slow_hash_original(input.as_bytes());
 /// assert_eq!(output, "a084f01d1437a09c6985401b60d43554ae105802c5f5d8a9b3253649c0be6605".to_string());
 /// ```
-pub fn cn_slow_hash(input: &[u8]) -> String {
+pub fn cn_slow_hash_original(input: &[u8]) -> String {
     // CryptoNight Step 1: Initialization Of Scratchpad
 
-    //     First, the input is hashed using Keccak [KECCAK] with parameters b =
-    //    1600 and c = 512. The bytes 0..31 of the Keccak final state are
-    //    interpreted as an AES-256 key [AES] and expanded to 10 round keys. A
-    //    scratchpad of 2097152 bytes (2 MiB) is allocated. The bytes 64..191
-    //    are extracted from the Keccak final state and split into 8 blocks of
-    //    16 bytes each. Each block is encrypted using the following procedure:
+    // First, the input is hashed using Keccak [KECCAK] with parameters b =
+    // 1600 and c = 512. The bytes 0..31 of the Keccak final state are
+    // interpreted as an AES-256 key [AES] and expanded to 10 round keys. A
+    // scratchpad of 2097152 bytes (2 MiB) is allocated. The bytes 64..191
+    // are extracted from the Keccak final state and split into 8 blocks of
+    // 16 bytes each. Each block is encrypted using the following procedure:
 
-    //       for i = 0..9 do:
-    //           block = aes_round(block, round_keys[i])
-
-    //    Where aes_round function performs a round of AES encryption, which
-    //    means that SubBytes, ShiftRows and MixColumns steps are performed on
-    //    the block, and the result is XORed with the round key. Note that
-    //    unlike in the AES encryption algorithm, the first and the last rounds
-    //    are not special. The resulting blocks are written into the first 128
-    //    bytes of the scratchpad. Then, these blocks are encrypted again in
-    //    the same way, and the result is written into the second 128 bytes of
-    //    the scratchpad. Each time 128 bytes are written, they represent the
-    //    result of the encryption of the previously written 128 bytes. The
-    //    process is repeated until the scratchpad is fully initialized.
+    //    for i = 0..9 do:
+    //        block = aes_round(block, round_keys[i])
+    
+    // Where aes_round function performs a round of AES encryption, which
+    // means that SubBytes, ShiftRows and MixColumns steps are performed on
+    // the block, and the result is XORed with the round key. Note that
+    // unlike in the AES encryption algorithm, the first and the last rounds
+    // are not special. The resulting blocks are written into the first 128
+    // bytes of the scratchpad. Then, these blocks are encrypted again in
+    // the same way, and the result is written into the second 128 bytes of
+    // the scratchpad. Each time 128 bytes are written, they represent the
+    // result of the encryption of the previously written 128 bytes. The
+    // process is repeated until the scratchpad is fully initialized.
 
     // Step 1A: Initialize the scratchpad with empty data
     let mut scratchpad = [0u8; SCRATCHPAD_SIZE];

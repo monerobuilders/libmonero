@@ -134,9 +134,8 @@ fn generate_polyseed_seed(language: &str) -> Vec<&str> {
     let seed_bits = get_random_bits(150); // Get 150 random bits
     let features_bits = [false; 5]; // We don't use any feature while generating the seed
     let mut words_bits: Vec<Vec<bool>> = Vec::with_capacity(16); // The seed of Polyseed is 16 words long
-    // Calulcate checksum bits
-    let checksum_bits = vec![false; 11];
-    words_bits.push(checksum_bits);
+    // Add checksum bits to the seed
+    words_bits.push(vec![false; 11]);
     // Add secret seed and features bits
     for (index, item) in features_bits.iter().enumerate() {
         let mut word: Vec<bool> = Vec::with_capacity(11);

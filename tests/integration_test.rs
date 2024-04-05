@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use libmonero::keys::{derive_address, derive_hex_seed, derive_priv_keys, derive_pub_key, generate_seed};
-    use libmonero::crypt::cryptonight::cn_slow_hash;
+    use libmonero::crypt::cryptonight::cn_slow_hash_original;
 
     #[test]
     fn seed_generation() {
@@ -30,9 +30,9 @@ mod tests {
 
     #[cfg(test)]
     #[allow(warnings)]
-    fn hashing_cn_slow() {
+    fn hashing_cn_slow_original() {
         let input = b"This is a test";
-        let output = cn_slow_hash(input);
+        let output = cn_slow_hash_original(input);
         assert_eq!(
             output,
             "a084f01d1437a09c6985401b60d43554ae105802c5f5d8a9b3253649c0be6605".to_string()
