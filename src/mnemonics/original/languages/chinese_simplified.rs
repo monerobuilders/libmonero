@@ -9,7 +9,7 @@
  */
 
 #![allow(warnings)]
-use crate::wordsets::WordsetOriginal;
+use crate::mnemonics::original::wordsets::WordsetOriginal;
 
 // https://github.com/monero-project/monero/blob/master/src/mnemonics/chinese_simplified.h
 pub(crate) const CHINESESIMPLIFIEDORIGINAL: WordsetOriginal = WordsetOriginal {

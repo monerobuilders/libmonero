@@ -9,7 +9,7 @@
  */
 
 #![allow(warnings)]
-use crate::wordsets::WordsetOriginal;
+use crate::mnemonics::original::wordsets::WordsetOriginal;
 
 // https://github.com/monero-project/monero/blob/master/src/mnemonics/esperanto.h
 pub(crate) const ESPERANTOORIGINAL: WordsetOriginal = WordsetOriginal {

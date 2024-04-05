@@ -11,7 +11,7 @@
 #![allow(warnings)]
 use crate::mnemonics::original::languages::english::ENGLISHORIGINAL;
 
-use super::languages::{dutch::DUTCHORIGINAL, chinese_simplified::CHINESESIMPLIFIEDORIGINAL, esperanto::ESPERANTOORIGINAL, french::FRENCHORIGINAL, german::GERMANORIGINAL, italian::ITALIANORIGINAL, japanese::JAPANESEORIGINAL, lojban::LOJBANORIGINAL, portuguese::PORTUGUESEORIGINAL, russian::RUSSIANORIGINAL, spanish::SPANISHORIGINAL};
+use super::languages::{chinese_simplified::CHINESESIMPLIFIEDORIGINAL, dutch::DUTCHORIGINAL, esperanto::ESPERANTOORIGINAL, french::FRENCHORIGINAL, german::GERMANORIGINAL, italian::ITALIANORIGINAL, japanese::JAPANESEORIGINAL, lojban::LOJBANORIGINAL, portuguese::PORTUGUESEORIGINAL, russian::RUSSIANORIGINAL, spanish::SPANISHORIGINAL};
 
 // WordsetOriginal is a struct that contains the name of the wordset, the prefix length and the words
 // Name is the ISO639 language code (https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)

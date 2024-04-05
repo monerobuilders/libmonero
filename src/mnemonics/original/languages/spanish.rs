@@ -9,7 +9,7 @@
  */
 
 #![allow(warnings)]
-use crate::wordsets::WordsetOriginal;
+use crate::mnemonics::original::wordsets::WordsetOriginal;
 
 // https://github.com/monero-project/monero/blob/master/src/mnemonics/spanish.h
 pub(crate) const SPANISHORIGINAL: WordsetOriginal = WordsetOriginal {

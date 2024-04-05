@@ -13,18 +13,31 @@
 //! This module is for everything related to keys, such as generating seeds, deriving keys from seeds, deriving public keys from private keys, and deriving addresses from public keys etc.
 
 use crate::crypt::ed25519::sc_reduce32;
-use crate::wordsets::{WordsetOriginal, WORDSETSORIGINAL};
+use crate::mnemonics::original::wordsets::{WordsetOriginal, WORDSETSORIGINAL};
+use crate::mnemonics::polyseed::wordsets::WORDSETSPOLYSEED;
 use crc32fast::Hasher;
 use curve25519_dalek::{constants::ED25519_BASEPOINT_TABLE, EdwardsPoint, Scalar};
 use rand::Rng;
 use sha3::{Digest, Keccak256};
 use std::ops::Mul;
+use std::time::{SystemTime, UNIX_EPOCH};
+use std::vec;
 
 /// Returns cryptographically secure random element of the given array
 fn secure_random_element<'x>(array: &'x [&'x str]) -> &'x str {
     let mut rng = rand::thread_rng();
     let random_index = rng.gen_range(0..array.len());
     array[random_index]
+}
+
+// Returns cryptographically secure random bits of given length
+fn get_random_bits(length: u64) -> Vec<bool> {
+    let mut rng = rand::thread_rng();
+    let mut bit_array = Vec::new();
+    for _ in 0..length {
+        bit_array.push(rng.gen_bool(0.5));
+    }
+    bit_array
 }
 
 /// Calculates CRC32 checksum index for given array (probably the seed)
@@ -94,8 +107,77 @@ fn generate_mymonero_seed(language: &str) -> Vec<&str> {
     seed
 }
 
+/// Generates a cryptographically secure 2048-type (16-word) seed for given language
+fn generate_polyseed_seed(language: &str) -> Vec<&str> {
+    // Check if language is supported
+    if !WORDSETSPOLYSEED.iter().any(|x| x.name == language) {
+        panic!("Language not found");
+    }
+    // Get birthday
+    const POLYSEEDEPOCH: u64 = 1635768000; // The epoch for Polyseed birthdays. 1st November 2021 12:00 UTC
+    const TIMESTEP: u64 = 2629746; // The time step for Polyseed. 1/12 of the Gregorian year
+    let birthday: u16 = ((SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+        - POLYSEEDEPOCH)
+        / TIMESTEP)
+        .try_into()
+        .unwrap(); // The birthday of the seed from how much approximate months have passed since the epoch
+    let mut birthday_bits: Vec<bool> = birthday
+        .to_be_bytes()
+        .to_vec()
+        .iter()
+        .flat_map(|&byte| (0..8).rev().map(move |i| (byte >> i) & 1 == 1))
+        .collect();
+    birthday_bits.drain(..6);
+    let seed_bits = get_random_bits(150); // Get 150 random bits
+    let features_bits = vec![false, false, false, false, false]; // We don't use any feature while generating the seed
+    let mut words_bits: Vec<Vec<bool>> = Vec::with_capacity(16); // The seed of Polyseed is 16 words long
+    // Calulcate checksum bits
+    let checksum_bits = vec![false, false, false, false, false, false, false, false, false, false, false];
+    words_bits.push(checksum_bits);
+    // Add secret seed and features bits
+    for i in 0..5 {
+        let mut word: Vec<bool> = Vec::with_capacity(11);
+        let sss = i * 10;
+        let sse = (i + 1) * 10;
+        let ssi = seed_bits[sss..sse].to_vec();
+        for bit in ssi {
+            word.push(bit);
+        }
+        word.push(features_bits[i]);
+        words_bits.push(word);
+    }
+    // Add rest of the seed and birthday bits
+    for i in 5..15 {
+        let mut word: Vec<bool> = Vec::with_capacity(11);
+        let sss = i * 10;
+        let sse = (i + 1) * 10;
+        let ssi = seed_bits[sss..sse].to_vec();
+        for bit in ssi {
+            word.push(bit);
+        }
+        word.push(birthday_bits[i - 5]);
+        words_bits.push(word);
+    }
+    // Choose words based on each bits, corresponding to 0-2047
+    let mut seed: Vec<&str> = Vec::new();
+    for word_bits in words_bits {
+        let mut word_index: u16 = 0;
+        for (i, bit) in word_bits.iter().enumerate() {
+            if *bit {
+                word_index += 2u16.pow((10 - i) as u32);
+            }
+        }
+        seed.push(WORDSETSPOLYSEED[0].words[word_index as usize]);
+    }
+    // Finally, return the seed
+    seed
+}
+
 /// Generates a cryptographically secure mnemonic phrase for given language and seed type
-/// 
+///
 /// Available seed types:
 /// - `original` : (25-word)
 ///     - `en` (English)
@@ -110,11 +192,11 @@ fn generate_mymonero_seed(language: &str) -> Vec<&str> {
 ///     - `en`, `eo`, `fr`, `it`, `jp`, `lj`, `pt`, `ru` (same as original)
 /// - `polyseed` : (TO BE IMPLEMENTED)
 /// > DISCLAIMER: polyseed is not implemented yet
-/// 
+///
 /// Example:
 /// ```
 /// use libmonero::keys::generate_seed;
-/// 
+///
 /// let mnemonic: Vec<String> = generate_seed("en", "original");
 /// // Not equal to the example below because the seed is generated randomly, but the seed is valid
 /// assert_ne!(mnemonic, vec!["tissue", "raking", "haunted", "huts", "afraid", "volcano", "howls", "liar", "egotistic", "befit", "rounded", "older", "bluntly", "imbalance", "pivot", "exotic", "tuxedo", "amaze", "mostly", "lukewarm", "macro", "vocal", "hounded", "biplane", "rounded"].iter().map(|&s| s.to_string()).collect::<Vec<String>>());
@@ -123,7 +205,7 @@ pub fn generate_seed(language: &str, seed_type: &str) -> Vec<String> {
     let seed = match seed_type {
         "original" => generate_original_seed(language),
         "mymonero" => generate_mymonero_seed(language),
-        "polyseed" => panic!("Polyseed not implemented yet"),
+        "polyseed" => generate_polyseed_seed(language),
         _ => panic!("Invalid seed type"),
     };
     let mut seed_string: Vec<String> = Vec::new();
@@ -139,11 +221,11 @@ fn swap_endian_4_byte(s: &str) -> String {
 }
 
 /// Derives hexadecimal seed from the given mnemonic seed
-/// 
+///
 /// Example:
 /// ```
 /// use libmonero::keys::derive_hex_seed;
-/// 
+///
 /// let mnemonic: Vec<String> = vec!["tissue", "raking", "haunted", "huts", "afraid", "volcano", "howls", "liar", "egotistic", "befit", "rounded", "older", "bluntly", "imbalance", "pivot", "exotic", "tuxedo", "amaze", "mostly", "lukewarm", "macro", "vocal", "hounded", "biplane", "rounded"].iter().map(|s| s.to_string()).collect();
 /// let hex_seed: String = derive_hex_seed(mnemonic);
 /// assert_eq!(hex_seed, "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8".to_string());
@@ -304,13 +386,13 @@ fn derive_mymonero_priv_keys(hex_seed: String) -> Vec<String> {
 }
 
 /// Derives private keys from given hex seed
-/// 
+///
 /// Vector's first element is private spend key, second element is private view key
-/// 
+///
 /// Example:
 /// ```
 /// use libmonero::keys::derive_priv_keys;
-/// 
+///
 /// let hex_seed: String = "f7b3beabc9bd6ced864096c0891a8fdf94dc714178a09828775dba01b4df9ab8".to_string();
 /// let priv_keys: Vec<String> = derive_priv_keys(hex_seed);
 /// assert_eq!(priv_keys, vec!["c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08", "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908"].iter().map(|&s| s.to_string()).collect::<Vec<String>>());
@@ -324,11 +406,11 @@ pub fn derive_priv_keys(hex_seed: String) -> Vec<String> {
 }
 
 /// Derives private view key from given private spend key
-/// 
+///
 /// Example:
 /// ```
 /// use libmonero::keys::derive_priv_vk_from_priv_sk;
-/// 
+///
 /// let private_spend_key: String = "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08".to_string();
 /// let private_view_key: String = derive_priv_vk_from_priv_sk(private_spend_key);
 /// assert_eq!(private_view_key, "0d13a94c82d7a60abb54d2217d38935c3f715295e30378f8848a1ca1abc8d908".to_string());
@@ -359,11 +441,11 @@ fn ge_scalar_mult_base(scalar: &Scalar) -> EdwardsPoint {
 }
 
 /// Derives public key from given private key (spend or view)
-/// 
+///
 /// Example:
 /// ```
 /// use libmonero::keys::derive_pub_key;
-/// 
+///
 /// let private_spend_key: String = "c8982eada77ba2245183f2bff85dfaf993dc714178a09828775dba01b4df9a08".to_string();
 /// let public_spend_key: String = derive_pub_key(private_spend_key);
 /// assert_eq!(public_spend_key, "e78d891dd2be407f24e6470caad956e1b746ae0b41cd8252f96684090bc05d95".to_string());
@@ -391,15 +473,15 @@ pub fn derive_pub_key(private_key: String) -> String {
 }
 
 /// Derives main public address from given public spend key, public view key and network
-/// 
+///
 /// Networks:
 /// - `0` : Monero Mainnet
 /// - `1` : Monero Testnet
-/// 
+///
 /// Example:
 /// ```
 /// use libmonero::keys::derive_address;
-/// 
+///
 /// let public_spend_key: String = "e78d891dd2be407f24e6470caad956e1b746ae0b41cd8252f96684090bc05d95".to_string();
 /// let public_view_key: String = "157d278aa3aee4e11c5a8243a43a78527a2691009562b8c18654975f1347cb47".to_string();
 /// let public_address: String = derive_address(public_spend_key, public_view_key, 0);

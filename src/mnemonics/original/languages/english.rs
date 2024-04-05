@@ -8,7 +8,7 @@
  *
  */
 
-use crate::wordsets::WordsetOriginal;
+use crate::mnemonics::original::wordsets::WordsetOriginal;
 
 // https://github.com/monero-project/monero/blob/master/src/mnemonics/english.h
 pub(crate) const ENGLISHORIGINAL: WordsetOriginal = WordsetOriginal {

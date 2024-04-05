@@ -39,7 +39,7 @@ If you have any questions, you can ask either at the [discussions](https://githu
 
 As you may notice, we don't make any money from this project. We are working on this project for the Monero community and for the love of open-source. If you want to support us, you can donate to the following Monero address:
 ```
-48SK3AeqELVKwsyKkSvxw9YkY8YU5eBHTZTQS2eWZb9yNtb7FYAJqxnhY41x5uGb2UJew8pBek4Cdg41CaA3CHpCCsGGBjF
+42monume4tTXqMHPDAQ3wSgUo1oN3kT9hKytkyEGYKP8g3DAWoLk2hUJ2SiwNyvC93cq3wb7VgEe7CZ4NH4dzemWFD1xd5ye
 ```
 
 ## Licensing

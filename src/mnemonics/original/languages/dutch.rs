@@ -9,7 +9,7 @@
  */
 
 #![allow(warnings)]
-use crate::wordsets::WordsetOriginal;
+use crate::mnemonics::original::wordsets::WordsetOriginal;
 
 // https://github.com/monero-project/monero/blob/master/src/mnemonics/dutch.h
 pub(crate) const DUTCHORIGINAL: WordsetOriginal = WordsetOriginal {

@@ -43,7 +43,6 @@
 //! - Utils
 //!     - [`is_valid_addr(address: &str) -> bool`](utils/fn.is_valid_addr.html)
 
-pub(crate) use mnemonics::original::wordsets;
 
 pub(crate) mod mnemonics {
     pub mod original {
@@ -61,6 +60,12 @@ pub(crate) mod mnemonics {
             pub mod portuguese;
             pub mod russian;
             pub mod spanish;
+        }
+    }
+    pub mod polyseed {
+        pub mod wordsets;
+        pub mod languages {
+            pub mod english;
         }
     }
 }
