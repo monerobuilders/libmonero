@@ -18,13 +18,13 @@ const SCRATCHPAD_SIZE: usize = 2 * 1024 * 1024; // 2 MiB
 /// 
 /// Example:
 /// ```
-/// use libmonero::crypt::cryptonight::cn_slow_hash_original;
+/// use libmonero::crypt::cryptonight::cn_slow_hash_v0;
 /// 
 /// let input: &str = "This is a test";
-/// let output: String = cn_slow_hash_original(input.as_bytes());
+/// let output: String = cn_slow_hash_v0(input.as_bytes());
 /// assert_eq!(output, "a084f01d1437a09c6985401b60d43554ae105802c5f5d8a9b3253649c0be6605".to_string());
 /// ```
-pub fn cn_slow_hash_original(input: &[u8]) -> String {
+pub fn cn_slow_hash_v0(input: &[u8]) -> String {
     // CryptoNight Step 1: Initialization Of Scratchpad
 
     // First, the input is hashed using Keccak [KECCAK] with parameters b =
