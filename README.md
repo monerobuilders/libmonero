@@ -50,7 +50,7 @@ This project is licensed under the MIT License. Please take a look at [LICENSE.m
 
 Almost every Monero 'library' on the net is either a wrapper or a port of the official software and it's RPC. They just make interface for you to communicate with the 'real software', where all things happen. This is not the case with libmonero¹. You don't need any of the official code, which is written in C++ and is very hard to understand (some people even say wallet2 is 'hell' :D). This library is designed to be a fast, safe, and full-featured library, with support for all the features of the Monero blockchain and ecosystem.
 
-¹: This library is written from scratch in Rust and is designed to be easy to use and understand with no need for any other software (other than Monero Daemon for blockchain data etc., NO WALLET RPC). We aim for this library to be usable even for embedded apps. That's why we are calling it 'batteries-included'.
+This library is written from scratch in Rust and is designed to be easy to use and understand with no need for any other software (other than Monero Daemon for blockchain data etc.). We aim for this library to be usable even for embedded apps. That's why we are calling it 'batteries-included'.
 
 Building this library from scratch is a huge task. We are working hard to make it as good as possible. If you want to help us, please consider contributing to this project. We are looking for people who can help us with the development, testing, and documentation.
 
