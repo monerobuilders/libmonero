@@ -9,8 +9,7 @@
 [![Crates.io](https://img.shields.io/crates/v/libmonero.svg)](https://crates.io/crates/libmonero)
 [![Docs](https://docs.rs/libmonero/badge.svg)](https://docs.rs/libmonero)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Dependency Status](https://deps.rs/repo/github/monumexyz/libmonero/status.svg)](https://deps.rs/repo/github/monumexyz/libmonero)
-[![Matrix](https://img.shields.io/badge/Matrix-Monume-white?logo=matrix&labelColor=grey&logoColor=white)](https://matrix.to/#/#monume:matrix.org)
+[![Dependency Status](https://deps.rs/repo/github/monerobuilders/libmonero/status.svg)](https://deps.rs/repo/github/monerobuilders/libmonero)
 
 > DISCLAIMER: This library is still in early development and doesn't have a stable version yet. It is not ready for production use and not cryptographically audited. We are working hard to make it as secure as possible. Please use it at your own risk.
 
@@ -33,14 +32,7 @@ Add the library to your project and use the functions: \
 ```cargo add libmonero```
 
 For more details, please take a look at [docs](https://docs.rs/libmonero).
-If you have any questions, you can ask either at the [discussions](https://github.com/monumexyz/libmonero/discussions) or [matrix channel](https://matrix.to/#/#monume:matrix.org).
-
-## Supporting
-
-As you may notice, we don't make any money from this project. We are working on this project for the Monero community and for the love of open-source. If you want to support us, you can donate to the following Monero address:
-```
-42monume4tTXqMHPDAQ3wSgUo1oN3kT9hKytkyEGYKP8g3DAWoLk2hUJ2SiwNyvC93cq3wb7VgEe7CZ4NH4dzemWFD1xd5ye
-```
+If you have any questions, you can ask it at the [discussions](https://github.com/monerobuilders/libmonero/discussions).
 
 ## Licensing
 
@@ -60,6 +52,6 @@ Almost every Monero 'library' on the net is either a wrapper or a port of the of
 
 ¹: This library is written from scratch in Rust and is designed to be easy to use and understand with no need for any other software (other than Monero Daemon for blockchain data etc., NO WALLET RPC). We aim for this library to be usable even for embedded apps. That's why we are calling it 'batteries-included'.
 
-Building this library from scratch is a huge task. We are working hard to make it as good as possible. If you want to help us, please consider contributing to this project. We are looking for people who can help us with the development, testing, and documentation. If you are interested and need any help about it, please contact community at the matrix room: [#monume:matrix.org](https://matrix.to/#/#monume:matrix.org)
+Building this library from scratch is a huge task. We are working hard to make it as good as possible. If you want to help us, please consider contributing to this project. We are looking for people who can help us with the development, testing, and documentation.
 
 TL;DR: No-bullshit, standalone, fast, safe and easy to use library for Monero did not exist, so we made one.
