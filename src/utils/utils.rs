@@ -27,6 +27,7 @@ use regex::Regex;
 /// assert_eq!(result_invalid, false);
 /// ```
 pub fn is_valid_addr(address: &str) -> bool {
+    // TODO: Refactor for a better Monero address validation based on eliptic curve
     let r = Regex::new(r"^[48][0-9AB][1-9A-HJ-NP-Za-km-z]{93}$").unwrap();
     r.is_match(address)
 }

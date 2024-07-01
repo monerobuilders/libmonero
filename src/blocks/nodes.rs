@@ -26,15 +26,6 @@ impl DaemonNode {
         }
     }
 
-    /// Returns Stack Wallet's default node
-    pub fn stack_wallet_default() -> DaemonNode {
-        DaemonNode {
-            url: "monero.stackwallet.com".to_string(),
-            port: 18081,
-            tls: false
-        }
-    }
-
     /// Creates a new DaemonNode from a given URL, port and tls flag
     pub fn new(url: String, port: u16, tls: bool) -> DaemonNode {
         DaemonNode {
